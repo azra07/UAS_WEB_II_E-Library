@@ -3,9 +3,9 @@
 Aplikasi **E-Library** adalah platform perpustakaan digital berbasis web yang dibangun untuk memenuhi Tugas Akhir mata kuliah **Pemrograman Web II**. Aplikasi ini dirancang untuk mempermudah manajemen data buku, peminjaman, serta memberikan akses membaca bagi mahasiswa/pengguna.
 
 ## 👥 Anggota Kelompok
+* [M Triyudha Ramadhani] - (2110817210008)
+* [Muhammad Rizky Akbar] - (2410817210016)
 * [Putri Fatima Az'hara] - (2410817120001)
-* [Nama Teman 1] - (NIM)
-* [Nama Teman 2] - (NIM)
 
 ## 🚀 Fitur Utama (Sesuai Ketentuan Tugas Akhir)
 1. **Sistem Autentikasi (Login & Logout)**: Mendukung multi-user (contoh: Admin Perpustakaan dan Mahasiswa/Peminjam).
