@@ -14,10 +14,11 @@ Aplikasi **E-Library** adalah platform perpustakaan digital berbasis web yang di
    * **One-to-Many**: Relasi pada data buku, kategori, dan detail instansi.
    * **Many-to-Many**: Relasi antara Mahasiswa dan Buku (Proses Peminjaman).
 
-## 🛠️ Teknologi yang Digunakan
+## 🛠️ Framework yang Digunakan
 * **Backend Framework**: Laravel
-* **Frontend/CSS**: [Masukkan Framework CSS yang dipakai, misal: Bootstrap / Tailwind CSS]
-* **Database**: MySQL (Basis Data Relasional)
+* **Frontend**: Tailwind CSS
+* **Library JavaScript**: Alpine.js
+* **Database**: MySQL
 * **Version Control**: Git & GitHub
 
 ## 💻 Cara Menjalankan Proyek Secara Lokal
