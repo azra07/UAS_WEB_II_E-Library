@@ -143,7 +143,8 @@
 <h1 class="font-headline-md text-[32px] leading-10 text-primary mb-3">Access the Archive</h1>
 <p class="font-body-md text-on-surface-variant">Sign in to your Lexicon Librium account to access your reserved manuscripts and personal catalogs.</p>
 </div>
-<form action="#" class="flex flex-col gap-6" method="POST">
+<form action="{{ route('login') }}" class="flex flex-col gap-6" method="POST">
+    @csrf
 <!-- Email Input -->
 <div class="flex flex-col gap-2">
 <label class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider" for="email">Email Address</label>

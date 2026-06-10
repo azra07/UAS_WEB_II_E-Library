@@ -379,9 +379,8 @@
 <p class="font-body-md text-body-md text-on-surface-variant max-w-xl mb-10">
                     Join institutions worldwide that rely on Lexicon Librium to maintain the dignity and accessibility of their literary assets.
                 </p>
-<a href="{{ url('login') }}" class="text-sm font-semibold text-[#F6F4E8] bg-[#4A3B32] px-5 py-2.5 rounded-md hover:bg-[#342923] transition shadow-sm">
+<a href="{{ url('signin') }}" class="text-sm font-semibold text-[#F6F4E8] bg-[#4A3B32] px-5 py-2.5 rounded-md hover:bg-[#342923] transition shadow-sm">
     Sign In
-</a>
 </a>
 </div>
 </section>

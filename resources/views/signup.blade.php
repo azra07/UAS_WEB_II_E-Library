@@ -182,7 +182,7 @@
 <!-- Footer Link -->
 <div class="mt-8 pt-6 border-t border-surface-variant text-center"><p class="font-body-md text-on-surface-variant">
                         Already have an account? 
-                        <a class="text-primary font-medium hover:underline underline-offset-4 transition-all decoration-primary/30 hover:decoration-primary" href="{{ url('login') }}">Sign In</a>
+                        <a class="text-primary font-medium hover:underline underline-offset-4 transition-all decoration-primary/30 hover:decoration-primary" href="{{ url('signin') }}">Sign In</a>
 </p></div>
 </div>
 </div>
