@@ -74,30 +74,18 @@
                     <h2 class="font-serif text-4xl font-bold tracking-tight mb-2">Loan Ledger</h2>
                     <p class="text-sm text-[#7A6A5E]">Monitor active book circulation, process returns, and track overdue materials.</p>
                 </div>
-                <button class="bg-transparent border border-[#E8E4D5] text-[#5A4A42] px-5 py-2.5 rounded text-xs font-semibold uppercase tracking-wider flex items-center gap-2 hover:bg-[#EAE6D7] transition shadow-sm whitespace-nowrap">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    Export Ledger
-                </button>
+                <a href="{{ route('transactions.create') }}" class="bg-[#4A3B32] text-[#F6F4E8] px-5 py-2.5 rounded text-xs font-semibold uppercase tracking-wider flex items-center gap-2 hover:bg-[#342923] transition shadow-sm whitespace-nowrap">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Process New Loan
+                </a>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg p-5 shadow-sm">
                     <p class="text-[11px] text-[#7A6A5E] uppercase tracking-wider font-semibold mb-2">Active Loans</p>
-                    <h3 class="font-serif text-3xl font-bold mb-1">450</h3>
+                    <h3 class="font-serif text-3xl font-bold mb-1">{{ $activeLoans }}</h3>
                 </div>
-                <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg p-5 shadow-sm">
-                    <p class="text-[11px] text-[#7A6A5E] uppercase tracking-wider font-semibold mb-2">Returned Today</p>
-                    <h3 class="font-serif text-3xl font-bold mb-1 text-[#3B6A2E]">28</h3>
                 </div>
-                <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg p-5 shadow-sm">
-                    <p class="text-[11px] text-[#7A6A5E] uppercase tracking-wider font-semibold mb-2">Due Today</p>
-                    <h3 class="font-serif text-3xl font-bold mb-1">15</h3>
-                </div>
-                <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg p-5 shadow-sm border-l-4 border-l-[#A53A3A]">
-                    <p class="text-[11px] text-[#7A6A5E] uppercase tracking-wider font-semibold mb-2">Overdue</p>
-                    <h3 class="font-serif text-3xl font-bold text-[#A53A3A] mb-1">24</h3>
-                </div>
-            </div>
 
             <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg shadow-sm overflow-hidden mb-8">
                 
@@ -130,105 +118,73 @@
                                 <th class="px-6 py-4 font-semibold text-right">Action</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-[#E8E4D5]">
-                            
-                            <tr class="hover:bg-[#FAF8F2] transition">
-                                <td class="px-6 py-4 text-[#7A6A5E] font-mono text-xs">TRX-00921</td>
+                    <tbody class="divide-y divide-[#E8E4D5]">
+                        @forelse ($transactions as $trx)
+                                 @php
+                                // Use the DB due_date if it exists. If it's an old record (null), default to +14 days.
+                                $dueDate = $trx->due_date ?? $trx->tanggal_pinjam->copy()->addDays(14);
+                                
+                                // Now $dueDate is guaranteed to be a date object, so this logic is safe!
+                                $isOverdue = is_null($trx->tanggal_kembali) && $dueDate->isPast();
+                                
+                                $firstDetail = $trx->details->first();
+                                $book = $firstDetail ? $firstDetail->book : null;
+                            @endphp
+                            <tr class="hover:bg-[#FAF8F2] transition {{ $isOverdue ? 'bg-red-50/30' : '' }}">
+                                <td class="px-6 py-4 text-[#7A6A5E] font-mono text-xs">TRX-{{ str_pad($trx->id, 5, '0', STR_PAD_LEFT) }}</td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-[#EAD4C8] text-[#8C5D42] flex items-center justify-center font-bold text-xs">JS</div>
-                                        <span class="font-bold text-[#3A2A22]">John Smith</span>
+                                        <div class="w-8 h-8 rounded-full bg-[#EAD4C8] text-[#8C5D42] flex items-center justify-center font-bold text-xs">
+                                            {{ strtoupper(substr($trx->user->name, 0, 2)) }}
+                                        </div>
+                                        <span class="font-bold text-[#3A2A22]">{{ $trx->user->name }}</span>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <p class="font-medium text-[#3A2A22]">The Architecture of Happiness</p>
-                                    <p class="text-[10px] text-[#7A6A5E] uppercase tracking-wider">LOC: 104.B2</p>
+                                    <p class="font-medium text-[#3A2A22]">{{ $book ? $book->judul : 'Book Data Missing' }}</p>
+                                    <p class="text-[10px] text-[#7A6A5E] uppercase tracking-wider">ISBN: {{ $book ? $book->isbn : 'N/A' }}</p>
                                 </td>
-                                <td class="px-6 py-4 text-[#5A4A42]">Oct 24, 2023</td>
-                                <td class="px-6 py-4 text-[#5A4A42] font-medium">Nov 07, 2023</td>
+                                <td class="px-6 py-4 text-[#5A4A42]">{{ $trx->tanggal_pinjam->format('M d, Y') }}</td>
+                                    <td class="px-6 py-4 {{ $isOverdue ? 'text-[#A53A3A] font-bold' : 'text-[#5A4A42] font-medium' }}">
+                                        {{ $dueDate->format('M d, Y') }}
+                                    </td>
                                 <td class="px-6 py-4 text-center">
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#E8E4D5] text-[#5A4A42]">
-                                        On Loan
-                                    </span>
+                                    @if($trx->tanggal_kembali)
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#DDF0D6] text-[#3B6A2E]">
+                                            Returned
+                                        </span>
+                                    @elseif($isOverdue)
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#FADCDC] text-[#A53A3A]">
+                                            Overdue ({{ $dueDate->diffInDays(today()) }} Days)
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#E8E4D5] text-[#5A4A42]">
+                                            On Loan
+                                        </span>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 text-right">
-                                    <button class="text-[#7A6A5E] hover:text-[#4A3B32] transition font-medium text-[11px] uppercase tracking-wider border border-[#E8E4D5] bg-white px-3 py-1.5 rounded shadow-sm">Process Return</button>
+                                    @if(is_null($trx->tanggal_kembali))
+                                       <form action="{{ route('transactions.return', $trx->id) }}" method="POST" class="inline-block">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="text-[#7A6A5E] hover:text-[#3A2A22] transition font-medium text-[11px] uppercase tracking-wider border border-[#E8E4D5] bg-white px-3 py-1.5 rounded shadow-sm">
+                                                Process Return
+                                            </button>
+                                        </form>
+                                    @else
+                                        <span class="text-[#7A6A5E] text-[11px] uppercase tracking-wider">Closed</span>
+                                    @endif
                                 </td>
                             </tr>
-
-                            <tr class="hover:bg-[#FAF8F2] transition bg-red-50/30">
-                                <td class="px-6 py-4 text-[#7A6A5E] font-mono text-xs">TRX-00874</td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-[#8E6C5F] text-[#FCFBFA] flex items-center justify-center font-bold text-xs">AW</div>
-                                        <span class="font-bold text-[#3A2A22]">Alice Walker</span>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <p class="font-medium text-[#3A2A22]">Introduction to Algorithms</p>
-                                    <p class="text-[10px] text-[#7A6A5E] uppercase tracking-wider">LOC: 813.M4</p>
-                                </td>
-                                <td class="px-6 py-4 text-[#5A4A42]">Oct 05, 2023</td>
-                                <td class="px-6 py-4 text-[#A53A3A] font-bold">Oct 19, 2023</td>
-                                <td class="px-6 py-4 text-center">
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#FADCDC] text-[#A53A3A]">
-                                        Overdue (5 Days)
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <button class="text-[#A53A3A] hover:text-white hover:bg-[#A53A3A] transition font-medium text-[11px] uppercase tracking-wider border border-[#A53A3A] bg-white px-3 py-1.5 rounded shadow-sm">Send Notice</button>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="px-6 py-12 text-center text-[#7A6A5E]">
+                                    No loan transactions found.
                                 </td>
                             </tr>
-
-                            <tr class="hover:bg-[#FAF8F2] transition opacity-75">
-                                <td class="px-6 py-4 text-[#7A6A5E] font-mono text-xs">TRX-00910</td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-[#4A3B32] text-[#FCFBFA] flex items-center justify-center font-bold text-xs">ED</div>
-                                        <span class="font-bold text-[#3A2A22]">Eleanor Dashwood</span>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <p class="font-medium text-[#3A2A22]">Principia Mathematica</p>
-                                    <p class="text-[10px] text-[#7A6A5E] uppercase tracking-wider">LOC: 510.N2</p>
-                                </td>
-                                <td class="px-6 py-4 text-[#5A4A42]">Oct 10, 2023</td>
-                                <td class="px-6 py-4 text-[#5A4A42]">Oct 24, 2023</td>
-                                <td class="px-6 py-4 text-center">
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#DDF0D6] text-[#3B6A2E]">
-                                        Returned
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <button class="text-[#7A6A5E] hover:text-[#4A3B32] transition font-medium text-[11px] uppercase tracking-wider">View Receipt</button>
-                                </td>
-                            </tr>
-
-                            <tr class="hover:bg-[#FAF8F2] transition">
-                                <td class="px-6 py-4 text-[#7A6A5E] font-mono text-xs">TRX-00925</td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-[#3A2A22] text-[#FCFBFA] flex items-center justify-center font-bold text-xs">MR</div>
-                                        <span class="font-bold text-[#3A2A22]">Marcus Reed</span>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <p class="font-medium text-[#3A2A22]">History of the Peloponnesian War</p>
-                                    <p class="text-[10px] text-[#7A6A5E] uppercase tracking-wider">LOC: 938.T4</p>
-                                </td>
-                                <td class="px-6 py-4 text-[#5A4A42]">Oct 25, 2023</td>
-                                <td class="px-6 py-4 text-[#5A4A42] font-medium">Nov 08, 2023</td>
-                                <td class="px-6 py-4 text-center">
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#E8E4D5] text-[#5A4A42]">
-                                        On Loan
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <button class="text-[#7A6A5E] hover:text-[#4A3B32] transition font-medium text-[11px] uppercase tracking-wider border border-[#E8E4D5] bg-white px-3 py-1.5 rounded shadow-sm">Process Return</button>
-                                </td>
-                            </tr>
-
-                        </tbody>
+                        @endforelse
+                    </tbody>
                     </table>
                 </div>
 
