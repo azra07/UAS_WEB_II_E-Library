@@ -86,60 +86,105 @@
                 </a>
             </div>
 
-            <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg p-5 mb-8 shadow-sm">
+            <form action="{{ route('buku.index') }}" method="GET" class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg p-5 mb-8 shadow-sm">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                     <div>
                         <label class="block text-[10px] text-[#7A6A5E] uppercase tracking-wider font-semibold mb-1.5">Search Title/ISBN</label>
                         <div class="relative">
                             <svg class="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                            <input type="text" placeholder="Search..." class="w-full pl-9 pr-3 py-2 border border-[#E8E4D5] rounded text-sm focus:outline-none focus:border-[#4A3B32]">
+                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search..." onchange="this.form.submit()" class="w-full pl-9 pr-3 py-2 border border-[#E8E4D5] rounded text-sm focus:outline-none focus:border-[#4A3B32]">
                         </div>
                     </div>
+                    
                     <div>
                         <label class="block text-[10px] text-[#7A6A5E] uppercase tracking-wider font-semibold mb-1.5">Category</label>
-                        <select class="w-full px-3 py-2 border border-[#E8E4D5] rounded text-sm focus:outline-none focus:border-[#4A3B32] bg-white appearance-none">
-                            <option>All Categories</option>
-                            <option>Philosophy</option>
-                            <option>History</option>
-                            <option>Sciences</option>
+                        <select name="category" onchange="this.form.submit()" class="w-full px-3 py-2 border border-[#E8E4D5] rounded text-sm focus:outline-none focus:border-[#4A3B32] bg-white appearance-none">
+                            <option value="All">All Categories</option>
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>
+                                    {{ $cat->nama_kategori }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
+
                     <div>
                         <label class="block text-[10px] text-[#7A6A5E] uppercase tracking-wider font-semibold mb-1.5">Availability</label>
-                        <select class="w-full px-3 py-2 border border-[#E8E4D5] rounded text-sm focus:outline-none focus:border-[#4A3B32] bg-white appearance-none">
-                            <option>Any Status</option>
-                            <option>Available</option>
-                            <option>On Loan</option>
+                        <select name="status" onchange="this.form.submit()" class="w-full px-3 py-2 border border-[#E8E4D5] rounded text-sm focus:outline-none focus:border-[#4A3B32] bg-white appearance-none">
+                            <option value="All">Any Status</option>
+                            <option value="Available" {{ request('status') == 'Available' ? 'selected' : '' }}>Available</option>
+                            <option value="On Loan" {{ request('status') == 'On Loan' ? 'selected' : '' }}>On Loan</option>
+                            <option value="Reserved" {{ request('status') == 'Reserved' ? 'selected' : '' }}>Reserved</option>
                         </select>
                     </div>
+
                     <div>
                         <label class="block text-[10px] text-[#7A6A5E] uppercase tracking-wider font-semibold mb-1.5">Language</label>
-                        <select class="w-full px-3 py-2 border border-[#E8E4D5] rounded text-sm focus:outline-none focus:border-[#4A3B32] bg-white appearance-none">
-                            <option>All Languages</option>
-                            <option>English</option>
-                            <option>Indonesian</option>
+                        <select name="language" onchange="this.form.submit()" class="w-full px-3 py-2 border border-[#E8E4D5] rounded text-sm focus:outline-none focus:border-[#4A3B32] bg-white appearance-none">
+                            <option value="All">All Languages</option>
+                            <option value="English" {{ request('language') == 'English' ? 'selected' : '' }}>English</option>
+                            <option value="Indonesian" {{ request('language') == 'Indonesian' ? 'selected' : '' }}>Indonesian</option>
                         </select>
                     </div>
                 </div>
-                <div class="flex items-center justify-between pt-4 border-t border-[#E8E4D5]">
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs text-[#7A6A5E]">Active Filters:</span>
-                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#EAE6D7] text-[#4A3B32] text-xs font-medium">Philosophy <button class="hover:text-black">×</button></span>
-                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#EAE6D7] text-[#4A3B32] text-xs font-medium">Available <button class="hover:text-black">×</button></span>
-                    </div>
-                    <button class="text-[11px] font-bold uppercase tracking-wider text-[#7A6A5E] hover:text-[#4A3B32]">Clear All</button>
-                </div>
-            </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="flex items-center justify-between pt-4 border-t border-[#E8E4D5]">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="text-xs text-[#7A6A5E]">Active Filters:</span>
+                        
+                        @if(request('search'))
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#EAE6D7] text-[#4A3B32] text-xs font-medium">Search: {{ request('search') }}</span>
+                        @endif
+                        
+                        @if(request('category') && request('category') !== 'All')
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#EAE6D7] text-[#4A3B32] text-xs font-medium">Category Filtered</span>
+                        @endif
+
+                        @if(request('status') && request('status') !== 'All')
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#EAE6D7] text-[#4A3B32] text-xs font-medium">{{ request('status') }}</span>
+                        @endif
+
+                        @if(request('language') && request('language') !== 'All')
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#EAE6D7] text-[#4A3B32] text-xs font-medium">{{ request('language') }}</span>
+                        @endif
+
+                        @if(!request('search') && (!request('category') || request('category') == 'All') && (!request('status') || request('status') == 'All') && (!request('language') || request('language') == 'All'))
+                            <span class="text-xs text-[#7A6A5E] italic">None</span>
+                        @endif
+                    </div>
+                    
+                    @if(request()->hasAny(['search', 'category', 'status', 'language']))
+                        <a href="{{ route('buku.index') }}" class="text-[11px] font-bold uppercase tracking-wider text-[#7A6A5E] hover:text-[#4A3B32]">Clear All</a>
+                    @endif
+                </div>
+            </form>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 @forelse ($books as $book)
                     <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg overflow-hidden shadow-sm flex flex-col">
                         <div class="h-64 bg-[#EAE6D7] relative p-4 flex items-center justify-center">
-                            <span class="absolute top-3 right-3 bg-[#DDF0D6] text-[#3B6A2E] text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide z-10 shadow-sm">Available</span>
-                            <div class="w-32 h-48 bg-[#2A3A32] rounded shadow-lg border-l-4 border-[#1E2A24] flex items-center justify-center p-2 text-center text-white font-serif">
-                            {{ substr($book->judul, 0, 3) }}
+                            
+                            @php
+                                $statusColors = [
+                                    'Available' => 'bg-[#DDF0D6] text-[#3B6A2E]',
+                                    'On Loan'   => 'bg-[#FADCDC] text-[#A53A3A]',
+                                    'Reserved'  => 'bg-[#EAE6D7] text-[#5A4A42]'
+                                ];
+                                $badgeColor = $statusColors[$book->status] ?? $statusColors['Available'];
+                            @endphp
+                            <span class="absolute top-3 right-3 {{ $badgeColor }} text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide z-10 shadow-sm">
+                                {{ $book->status }}
+                            </span>
+                            
+                            <div class="w-32 h-48 bg-[#2A3A32] rounded shadow-lg border-l-4 border-[#1E2A24] flex items-center justify-center text-center text-white font-serif overflow-hidden relative">
+                                @if($book->cover_image)
+                                    <img src="{{ asset('storage/' . $book->cover_image) }}" alt="{{ $book->judul }}" class="w-full h-full object-cover">
+                                @else
+                                    <div class="p-2">{{ substr($book->judul, 0, 3) }}</div>
+                                @endif
                             </div>
                         </div>
+
                         <div class="p-5 flex-1 flex flex-col">
                             <p class="text-[10px] text-[#7A6A5E] uppercase tracking-widest font-semibold mb-1">
                                 {{ $book->category->nama_kategori ?? 'Uncategorized' }}
@@ -152,6 +197,24 @@
                                     <p class="text-[9px] text-[#7A6A5E] uppercase tracking-wider">ISBN:</p>
                                     <p class="text-xs font-bold font-mono">{{ $book->isbn }}</p>
                                 </div>
+                                
+                                <div class="flex gap-2 text-[#7A6A5E]">
+                                    <a href="{{ route('buku.show', $book->id) }}" class="hover:text-[#4A3B32]" title="View Details">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                    </a>
+                                    
+                                    <a href="{{ route('buku.edit', $book->id) }}" class="hover:text-[#4A3B32]" title="Edit Book">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                    </a>
+
+                                    <form action="{{ route('buku.destroy', $book->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this book? This cannot be undone.');" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="hover:text-[#A53A3A] transition" title="Delete Book">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -162,8 +225,6 @@
                 @endforelse
             </div>               
  
-            </div>
-
             <div class="flex justify-center mb-8">
                 <button class="bg-transparent border border-[#E8E4D5] text-[#5A4A42] px-6 py-2.5 rounded text-xs font-bold uppercase tracking-widest hover:bg-[#EAE6D7] transition flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
