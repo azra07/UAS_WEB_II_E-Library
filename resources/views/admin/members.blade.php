@@ -76,26 +76,25 @@
                     <h2 class="font-serif text-4xl font-bold tracking-tight mb-2">Member Directory</h2>
                     <p class="text-sm text-[#7A6A5E]">Manage library patrons, view loan histories, and update account statuses.</p>
                 </div>
-                <button class="bg-[#4A3B32] text-[#F6F4E8] px-5 py-2.5 rounded text-xs font-semibold uppercase tracking-wider flex items-center gap-2 hover:bg-[#342923] transition whitespace-nowrap shadow-sm">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
-                    Add New Member
-                </button>
+            <a href="{{ route('members.create') }}" class="bg-[#4A3B32] text-[#F6F4E8] px-5 py-2.5 rounded text-xs font-semibold uppercase tracking-wider flex items-center gap-2 hover:bg-[#342923] transition whitespace-nowrap shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                Add New Member
+            </a>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg p-5 shadow-sm flex items-center justify-between">
                     <div>
                         <p class="text-[11px] text-[#7A6A5E] uppercase tracking-wider font-semibold mb-1">Total Members</p>
-                        <h3 class="font-serif text-3xl font-bold">4,821</h3>
+                        <h3 class="font-serif text-3xl font-bold">{{ number_format($totalMembers) }}</h3>
                     </div>
                     <div class="bg-[#DDF0D6] text-[#3B6A2E] text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
-                        ↗ +12%
                     </div>
                 </div>
                 <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg p-5 shadow-sm flex items-center justify-between">
                     <div>
                         <p class="text-[11px] text-[#7A6A5E] uppercase tracking-wider font-semibold mb-1">New This Month</p>
-                        <h3 class="font-serif text-3xl font-bold">145</h3>
+                        <h3 class="font-serif text-3xl font-bold">{{ number_format($newThisMonth) }}</h3>
                     </div>
                     <div class="text-[#7A6A5E]">
                         <svg class="w-8 h-8 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
@@ -104,7 +103,7 @@
                 <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg p-5 shadow-sm flex items-center justify-between">
                     <div>
                         <p class="text-[11px] text-[#7A6A5E] uppercase tracking-wider font-semibold mb-1">Active Today</p>
-                        <h3 class="font-serif text-3xl font-bold">312</h3>
+                        <h3 class="font-serif text-3xl font-bold">{{ number_format($activeToday) }}</h3>
                     </div>
                     <div class="text-[#7A6A5E]">
                         <svg class="w-8 h-8 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
@@ -145,109 +144,41 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-[#E8E4D5]">
-                            <tr class="hover:bg-[#FAF8F2] transition">
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full bg-[#EAD4C8] text-[#8C5D42] flex items-center justify-center font-serif font-bold text-lg relative">
-                                            EV
-                                            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></span>
+                            @forelse ($members as $member)
+                                <tr class="hover:bg-[#FAF8F2] transition">
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-full bg-[#EAD4C8] text-[#8C5D42] flex items-center justify-center font-serif font-bold text-lg relative">
+                                                {{ strtoupper(substr($member->name, 0, 2)) }}
+                                                <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></span>
+                                            </div>
+                                            <div>
+                                                <p class="font-bold text-[#3A2A22]">{{ $member->name }}</p>
+                                                <p class="text-[11px] text-[#7A6A5E]">{{ $member->email }}</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p class="font-bold text-[#3A2A22]">Eleanor Vance</p>
-                                            <p class="text-[11px] text-[#7A6A5E]">e.vance@example.com</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-[#5A4A42] font-mono text-xs">MEM-2023-0842</td>
-                                <td class="px-6 py-4 text-[#7A6A5E]">Oct 12, 2023</td>
-                                <td class="px-6 py-4 text-center font-bold text-[#3A2A22]">3</td>
-                                <td class="px-6 py-4">
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#DDF0D6] text-[#3B6A2E]">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-[#3B6A2E]"></span> Active
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <button class="text-[#7A6A5E] hover:text-[#4A3B32] transition font-medium text-[11px] uppercase tracking-wider">Manage</button>
-                                </td>
-                            </tr>
-
-                            <tr class="hover:bg-[#FAF8F2] transition">
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full bg-[#EAE6D7] text-[#5A4A42] flex items-center justify-center font-serif font-bold text-lg relative">
-                                            JT
-                                            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-orange-500 border-2 border-white rounded-full"></span>
-                                        </div>
-                                        <div>
-                                            <p class="font-bold text-[#3A2A22]">Julian Thorne</p>
-                                            <p class="text-[11px] text-[#7A6A5E]">j.thorne@example.com</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-[#5A4A42] font-mono text-xs">MEM-2021-1105</td>
-                                <td class="px-6 py-4 text-[#7A6A5E]">Mar 04, 2021</td>
-                                <td class="px-6 py-4 text-center font-bold text-[#A53A3A]">8</td>
-                                <td class="px-6 py-4">
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#FCE8D5] text-[#A56A3A]">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-[#A56A3A]"></span> Suspended
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <button class="text-[#7A6A5E] hover:text-[#4A3B32] transition font-medium text-[11px] uppercase tracking-wider">Manage</button>
-                                </td>
-                            </tr>
-
-                            <tr class="hover:bg-[#FAF8F2] transition opacity-75">
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full bg-[#D5D0C5] text-[#7A6A5E] flex items-center justify-center font-serif font-bold text-lg relative">
-                                            AP
-                                            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-gray-400 border-2 border-white rounded-full"></span>
-                                        </div>
-                                        <div>
-                                            <p class="font-bold text-[#5A4A42]">Arthur Pendelton</p>
-                                            <p class="text-[11px] text-[#7A6A5E]">arthur.p@example.com</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-[#7A6A5E] font-mono text-xs">MEM-2018-0021</td>
-                                <td class="px-6 py-4 text-[#7A6A5E]">Jan 15, 2018</td>
-                                <td class="px-6 py-4 text-center font-bold text-[#7A6A5E]">0</td>
-                                <td class="px-6 py-4">
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#EAE6D7] text-[#7A6A5E]">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-[#7A6A5E]"></span> Expired
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <button class="text-[#7A6A5E] hover:text-[#4A3B32] transition font-medium text-[11px] uppercase tracking-wider">Manage</button>
-                                </td>
-                            </tr>
-                            
-                            <tr class="hover:bg-[#FAF8F2] transition">
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full bg-[#EAD4C8] text-[#8C5D42] flex items-center justify-center font-serif font-bold text-lg relative">
-                                            MR
-                                            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></span>
-                                        </div>
-                                        <div>
-                                            <p class="font-bold text-[#3A2A22]">Maria Rossi</p>
-                                            <p class="text-[11px] text-[#7A6A5E]">m.rossi@example.com</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 text-[#5A4A42] font-mono text-xs">MEM-2024-0112</td>
-                                <td class="px-6 py-4 text-[#7A6A5E]">Feb 28, 2024</td>
-                                <td class="px-6 py-4 text-center font-bold text-[#3A2A22]">1</td>
-                                <td class="px-6 py-4">
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#DDF0D6] text-[#3B6A2E]">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-[#3B6A2E]"></span> Active
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <button class="text-[#7A6A5E] hover:text-[#4A3B32] transition font-medium text-[11px] uppercase tracking-wider">Manage</button>
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td class="px-6 py-4 text-[#5A4A42] font-mono text-xs">
+                                        MEM-{{ str_pad($member->id, 4, '0', STR_PAD_LEFT) }}
+                                    </td>
+                                    <td class="px-6 py-4 text-[#7A6A5E]">{{ $member->created_at->format('M d, Y') }}</td>
+                                    <td class="px-6 py-4 text-center font-bold text-[#3A2A22]">0</td>
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#DDF0D6] text-[#3B6A2E]">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[#3B6A2E]"></span> Active
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="text-[#7A6A5E] hover:text-[#4A3B32] transition font-medium text-[11px] uppercase tracking-wider">Manage</button>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="px-6 py-12 text-center text-[#7A6A5E]">
+                                        No library members registered yet.
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
