@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Book - Lexicon Librum</title>
+    <title>Edit Book - Lexicon Librum</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -45,7 +45,6 @@
     </aside>
 
     <main class="flex-1 flex flex-col overflow-y-auto">
-        
         <header class="flex items-center justify-between px-8 py-6 border-b border-[#E8E4D5] bg-[#F6F4E8]">
             <div class="flex items-center gap-4">
                 <a href="{{ route('buku.index') }}" class="text-[#7A6A5E] hover:text-[#3A2A22] flex items-center gap-2 text-sm font-medium transition">
@@ -62,57 +61,51 @@
 
         <div class="p-8 max-w-4xl mx-auto w-full">
             <div class="mb-8">
-                <h2 class="font-serif text-4xl font-bold tracking-tight mb-2">Add New Book</h2>
-                <p class="text-sm text-[#7A6A5E]">Register a new holding into the central library database.</p>
+                <h2 class="font-serif text-4xl font-bold tracking-tight mb-2">Edit Book Details</h2>
+                <p class="text-sm text-[#7A6A5E]">Update the information for <span class="font-bold italic">{{ $book->judul }}</span>.</p>
             </div>
 
             <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg p-8 shadow-sm">
-                <form action="{{ route('buku.store') }}" method="POST" enctype="multipart/form-data">
-                    @csrf <div class="space-y-6">
+                <form action="{{ route('buku.update', $book->id) }}" method="POST" enctype="multipart/form-data">
+                    @csrf 
+                    @method('PUT') <div class="space-y-6">
                         <div>
                             <label for="judul" class="block text-[11px] text-[#7A6A5E] uppercase tracking-wider font-bold mb-2">Book Title</label>
-                            <input type="text" name="judul" id="judul" value="{{ old('judul') }}" required
+                            <input type="text" name="judul" id="judul" value="{{ old('judul', $book->judul) }}" required
                                 class="w-full px-4 py-3 border border-[#E8E4D5] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#4A3B32] bg-white">
                             @error('judul') <span class="text-xs text-red-600 mt-1">{{ $message }}</span> @enderror
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div>
                                 <label for="penulis" class="block text-[11px] text-[#7A6A5E] uppercase tracking-wider font-bold mb-2">Author (Penulis)</label>
-                                <input type="text" name="penulis" id="penulis" value="{{ old('penulis') }}" required
+                                <input type="text" name="penulis" id="penulis" value="{{ old('penulis', $book->penulis) }}" required
                                     class="w-full px-4 py-3 border border-[#E8E4D5] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#4A3B32] bg-white">
                                 @error('penulis') <span class="text-xs text-red-600 mt-1">{{ $message }}</span> @enderror
                             </div>
                             
                             <div>
                                 <label for="isbn" class="block text-[11px] text-[#7A6A5E] uppercase tracking-wider font-bold mb-2">ISBN</label>
-                                <input type="text" name="isbn" id="isbn" value="{{ old('isbn') }}" required
+                                <input type="text" name="isbn" id="isbn" value="{{ old('isbn', $book->isbn) }}" required
                                     class="w-full px-4 py-3 border border-[#E8E4D5] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#4A3B32] bg-white font-mono">
                                 @error('isbn') <span class="text-xs text-red-600 mt-1">{{ $message }}</span> @enderror
                             </div>
-                        </div>
 
-                        <div>
-                            <label for="language" class="block text-[11px] text-[#7A6A5E] uppercase tracking-wider font-bold mb-2">Language</label>
-                            <select name="language" id="language" required class="w-full px-4 py-3 border border-[#E8E4D5] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#4A3B32] bg-white appearance-none">
-                                <option value="English">English</option>
-                                <option value="Indonesian">Indonesian</option>
-                            </select>
-                        </div>
-
-                        <div class="col-span-1 md:col-span-2 mt-4">
-                            <label for="cover_image" class="block text-[11px] text-[#7A6A5E] uppercase tracking-wider font-bold mb-2">Book Cover Image (Optional)</label>
-                            <input type="file" name="cover_image" id="cover_image" accept="image/*"
-                                class="w-full px-4 py-3 border border-[#E8E4D5] rounded-md text-sm bg-white file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-[#EAE6D7] file:text-[#4A3B32] hover:file:bg-[#D5D0C5]">
-                            @error('cover_image') <span class="text-xs text-red-600 mt-1">{{ $message }}</span> @enderror
+                            <div>
+                                <label for="language" class="block text-[11px] text-[#7A6A5E] uppercase tracking-wider font-bold mb-2">Language</label>
+                                <select name="language" id="language" required class="w-full px-4 py-3 border border-[#E8E4D5] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#4A3B32] bg-white appearance-none">
+                                    <option value="English" {{ old('language', $book->language) == 'English' ? 'selected' : '' }}>English</option>
+                                    <option value="Indonesian" {{ old('language', $book->language) == 'Indonesian' ? 'selected' : '' }}>Indonesian</option>
+                                </select>
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-[#E8E4D5]">
                             <div>
                                 <label for="category_name" class="block text-[11px] text-[#7A6A5E] uppercase tracking-wider font-bold mb-2">Category</label>
-                                <p class="text-[9px] text-[#7A6A5E] mb-1.5">Select existing or type a new one to create it instantly.</p>
+                                <p class="text-[9px] text-[#7A6A5E] mb-1.5">Select existing or type a new one.</p>
                                 
-                                <input list="category_list" name="category_name" id="category_name" value="{{ old('category_name') }}" required autocomplete="off"
+                                <input list="category_list" name="category_name" id="category_name" value="{{ old('category_name', $book->category->nama_kategori ?? '') }}" required autocomplete="off"
                                     class="w-full px-4 py-3 border border-[#E8E4D5] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#4A3B32] bg-white">
                                 
                                 <datalist id="category_list">
@@ -125,13 +118,33 @@
 
                             <div>
                                 <label for="publisher_id" class="block text-[11px] text-[#7A6A5E] uppercase tracking-wider font-bold mb-2">Publisher</label>
+                                <p class="text-[9px] text-transparent mb-1.5 hidden md:block">Spacer</p>
                                 <select name="publisher_id" id="publisher_id" required
                                     class="w-full px-4 py-3 border border-[#E8E4D5] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#4A3B32] bg-white appearance-none">
-                                    <option value="" disabled selected>Select a publisher...</option>
                                     @foreach($publishers as $publisher)
-                                        <option value="{{ $publisher->id }}">{{ $publisher->nama_penerbit }}</option>
+                                        <option value="{{ $publisher->id }}" {{ old('publisher_id', $book->publisher_id) == $publisher->id ? 'selected' : '' }}>
+                                            {{ $publisher->nama_penerbit }}
+                                        </option>
                                     @endforeach
                                 </select>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-[#E8E4D5]">
+                            <label for="cover_image" class="block text-[11px] text-[#7A6A5E] uppercase tracking-wider font-bold mb-2">Replace Cover Image</label>
+                            
+                            <div class="flex items-center gap-6">
+                                @if($book->cover_image)
+                                    <div class="w-16 h-24 shrink-0 bg-[#EAE6D7] rounded border border-[#E8E4D5] overflow-hidden">
+                                        <img src="{{ asset('storage/' . $book->cover_image) }}" alt="Current Cover" class="w-full h-full object-cover">
+                                    </div>
+                                @endif
+                                <div class="flex-1">
+                                    <input type="file" name="cover_image" id="cover_image" accept="image/*"
+                                        class="w-full px-4 py-3 border border-[#E8E4D5] rounded-md text-sm bg-white file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-[#EAE6D7] file:text-[#4A3B32] hover:file:bg-[#D5D0C5]">
+                                    <p class="text-[10px] text-[#7A6A5E] mt-1.5">Leave blank to keep the current image.</p>
+                                    @error('cover_image') <span class="text-xs text-red-600 mt-1">{{ $message }}</span> @enderror
+                                </div>
                             </div>
                         </div>
 
@@ -142,8 +155,8 @@
                             Cancel
                         </a>
                         <button type="submit" class="bg-[#4A3B32] text-[#F6F4E8] px-6 py-3 rounded text-xs font-semibold uppercase tracking-wider flex items-center gap-2 hover:bg-[#342923] transition shadow-sm">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            Save to Database
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                            Update Book
                         </button>
                     </div>
                 </form>
