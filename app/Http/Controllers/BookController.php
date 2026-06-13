@@ -12,29 +12,41 @@ class BookController extends Controller
      */
 public function index(Request $request)
     {
-
+        // Start building the query, but don't fetch yet
         $query = \App\Models\Book::with('category');
-        
 
-        $categories = \App\Models\Category::all();
-
+        // 1. Search Bar Logic (Looks at Judul or ISBN)
         if ($request->filled('search')) {
-            $searchTerm = $request->search;
-            $query->where(function($q) use ($searchTerm) {
-                $q->where('judul', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('isbn', 'like', '%' . $searchTerm . '%');
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('judul', 'like', "%{$search}%")
+                  ->orWhere('isbn', 'like', "%{$search}%");
             });
         }
 
-        if ($request->filled('category_id')) {
-            $query->where('category_id', $request->category_id);
+        // 2. Category Dropdown Logic
+        if ($request->filled('category') && $request->category !== 'All') {
+            $query->where('category_id', $request->category);
         }
 
-        $books = $query->get();
+        // 3. Status Dropdown Logic
+        if ($request->filled('status') && $request->status !== 'All') {
+            $query->where('status', $request->status);
+        }
+
+        // 4. Language Dropdown Logic
+        if ($request->filled('language') && $request->language !== 'All') {
+            $query->where('language', $request->language);
+        }
+
+        // Execute the query and get the results
+        $books = $query->latest()->get();
         
+        // We also need all categories to populate the filter dropdown itself!
+        $categories = \App\Models\Category::all();
+
         return view('admin.catalog', compact('books', 'categories'));
     }
-
     /**
      * Show the form for creating a new resource.
      */
@@ -48,45 +60,115 @@ public function index(Request $request)
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreBookRequest $request)
-    {
-        // Data di bawah ini sudah pasti valid karena sudah melewati StoreBookRequest
-        $validated = $request->validated();
+    public function store(Request $request)
+        {
+            $validated = $request->validate([
+                'judul' => 'required|string|max:255',
+                'penulis' => 'required|string|max:255',
+                'isbn' => 'required|string|max:50',
+                'language' => 'required|string',
+                'category_name' => 'required|string|max:255',
+                'publisher_id' => 'required|exists:publishers,id',
+                'cover_image' => 'nullable|image|max:2048', // Ensure it's an image under 2MB
+            ]);
 
-        \App\Models\Book::create($validated);
+            // Handle the Image Upload
+            $imagePath = null;
+            if ($request->hasFile('cover_image')) {
+                // Stores the file in storage/app/public/covers
+                $imagePath = $request->file('cover_image')->store('covers', 'public'); 
+            }
 
-        return redirect()->route('buku.index')->with('success', 'Buku berhasil ditambahkan!');
-    }
+            $category = \App\Models\Category::firstOrCreate(
+                ['nama_kategori' => $validated['category_name']],
+                ['deskripsi' => 'Auto-generated category']
+            );
+
+            \App\Models\Book::create([
+                'judul' => $validated['judul'],
+                'penulis' => $validated['penulis'],
+                'isbn' => $validated['isbn'],
+                'language' => $validated['language'],
+                'status' => 'Available',
+                'category_id' => $category->id,
+                'publisher_id' => $validated['publisher_id'],
+                'cover_image' => $imagePath, // Save the file path to the database
+            ]);
+
+            return redirect()->route('buku.index')->with('success', 'Book successfully saved!');
+        }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+public function show(string $id)
     {
-        //
+        $book = \App\Models\Book::with(['category', 'publisher'])->findOrFail($id);
+        return view('admin.books.show', compact('book'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        $book = \App\Models\Book::findOrFail($id);
+        $categories = \App\Models\Category::all();
+        $publishers = \App\Models\Publisher::all();
+        
+        return view('admin.books.edit', compact('book', 'categories', 'publishers'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $book = \App\Models\Book::findOrFail($id);
+
+        $validated = $request->validate([
+            'judul' => 'required|string|max:255',
+            'penulis' => 'required|string|max:255',
+            'isbn' => 'required|string|max:50',
+            'language' => 'required|string',
+            'category_name' => 'required|string|max:255',
+            'publisher_id' => 'required|exists:publishers,id',
+            'cover_image' => 'nullable|image|max:2048',
+        ]);
+
+        // Handle Image Replacement
+        if ($request->hasFile('cover_image')) {
+            // Delete the old image from storage if it exists
+            if ($book->cover_image) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($book->cover_image);
+            }
+            // Save the new image
+            $book->cover_image = $request->file('cover_image')->store('covers', 'public');
+        }
+
+        $category = \App\Models\Category::firstOrCreate(
+            ['nama_kategori' => $validated['category_name']],
+            ['deskripsi' => 'Auto-generated category']
+        );
+
+        $book->update([
+            'judul' => $validated['judul'],
+            'penulis' => $validated['penulis'],
+            'isbn' => $validated['isbn'],
+            'language' => $validated['language'],
+            'category_id' => $category->id,
+            'publisher_id' => $validated['publisher_id'],
+            // Notice we don't update 'status' here so we don't accidentally overwrite an active loan!
+        ]);
+
+        return redirect()->route('buku.index')->with('success', 'Book successfully updated!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $book = \App\Models\Book::findOrFail($id);
+        
+        // Clean up the image file from the server before deleting the database record
+        if ($book->cover_image) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($book->cover_image);
+        }
+        
+        $book->delete();
+        
+        return redirect()->route('buku.index')->with('success', 'Book successfully deleted!');
     }
 }
