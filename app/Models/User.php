@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -16,12 +15,11 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    // Tambahkan ini agar bisa menyimpan data
     protected $fillable = [
         'name',
         'email',
         'password',
-        'role', // Penting untuk membedakan Admin/User
+        'role', 
     ];
 
     protected $hidden = [
