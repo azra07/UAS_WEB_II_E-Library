@@ -10,9 +10,29 @@ class BookController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+public function index(Request $request)
     {
-        //
+
+        $query = \App\Models\Book::with('category');
+        
+
+        $categories = \App\Models\Category::all();
+
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('judul', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('isbn', 'like', '%' . $searchTerm . '%');
+            });
+        }
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        $books = $query->get();
+        
+        return view('admin.catalog', compact('books', 'categories'));
     }
 
     /**
@@ -20,7 +40,9 @@ class BookController extends Controller
      */
     public function create()
     {
-        //
+        $categories = \App\Models\Category::all();
+        $publishers = \App\Models\Publisher::all();
+        return view('admin.books.create', compact('categories', 'publishers'));
     }
 
     /**
