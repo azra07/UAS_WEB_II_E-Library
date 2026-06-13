@@ -13,11 +13,15 @@ class Book extends Model
         'judul', 
         'penulis', 
         'isbn', 
+        'language', 
+        'status', 
         'category_id', 
         'publisher_id'
     ];
+  
 
     public function category() { return $this->belongsTo(Category::class); }
     public function publisher() { return $this->belongsTo(Publisher::class); }
     public function ratings() { return $this->hasMany(Rating::class); }
+    
 }
