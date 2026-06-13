@@ -80,10 +80,10 @@
                     <h2 class="font-serif text-4xl font-bold tracking-tight mb-2">Catalog Holdings</h2>
                     <p class="text-sm text-[#7A6A5E]">Browse and manage the library's physical and digital collection.</p>
                 </div>
-                <button class="bg-[#4A3B32] text-[#F6F4E8] px-5 py-2.5 rounded text-xs font-semibold uppercase tracking-wider flex items-center gap-2 hover:bg-[#342923] transition whitespace-nowrap">
+                <a href="{{ route('buku.create') }}" class="bg-[#4A3B32] text-[#F6F4E8] px-5 py-2.5 rounded text-xs font-semibold uppercase tracking-wider flex items-center gap-2 hover:bg-[#342923] transition whitespace-nowrap">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                     Add New Book
-                </button>
+                </a>
             </div>
 
             <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg p-5 mb-8 shadow-sm">
@@ -131,113 +131,37 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                
-                <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg overflow-hidden shadow-sm flex flex-col">
-                    <div class="h-64 bg-[#EAE6D7] relative p-4 flex items-center justify-center">
-                        <span class="absolute top-3 right-3 bg-[#DDF0D6] text-[#3B6A2E] text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide z-10 shadow-sm">Available</span>
-                        <div class="w-32 h-48 bg-[#2A3A32] rounded shadow-lg border-l-4 border-[#1E2A24] flex items-center justify-center p-2 text-center">
-                           <div class="w-16 h-16 border-2 border-[#D4AF37] opacity-50 transform rotate-45"></div>
-                        </div>
-                    </div>
-                    <div class="p-5 flex-1 flex flex-col">
-                        <p class="text-[10px] text-[#7A6A5E] uppercase tracking-widest font-semibold mb-1">Philosophy</p>
-                        <h3 class="font-serif text-xl font-bold leading-tight mb-1">Meditations</h3>
-                        <p class="text-sm text-[#7A6A5E] mb-4">Marcus Aurelius</p>
-                        
-                        <div class="mt-auto pt-4 border-t border-[#E8E4D5] flex items-center justify-between">
-                            <div>
-                                <p class="text-[9px] text-[#7A6A5E] uppercase tracking-wider">Loc:</p>
-                                <p class="text-xs font-bold font-mono">104.B2</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                @forelse ($books as $book)
+                    <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg overflow-hidden shadow-sm flex flex-col">
+                        <div class="h-64 bg-[#EAE6D7] relative p-4 flex items-center justify-center">
+                            <span class="absolute top-3 right-3 bg-[#DDF0D6] text-[#3B6A2E] text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide z-10 shadow-sm">Available</span>
+                            <div class="w-32 h-48 bg-[#2A3A32] rounded shadow-lg border-l-4 border-[#1E2A24] flex items-center justify-center p-2 text-center text-white font-serif">
+                            {{ substr($book->judul, 0, 3) }}
                             </div>
-                            <div class="flex gap-2 text-[#7A6A5E]">
-                                <button class="hover:text-[#4A3B32]"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></button>
-                                <button class="hover:text-[#4A3B32]"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
-                                <button class="hover:text-[#4A3B32]"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg></button>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col">
+                            <p class="text-[10px] text-[#7A6A5E] uppercase tracking-widest font-semibold mb-1">
+                                {{ $book->category->nama_kategori ?? 'Uncategorized' }}
+                            </p>
+                            <h3 class="font-serif text-xl font-bold leading-tight mb-1">{{ $book->judul }}</h3>
+                            <p class="text-sm text-[#7A6A5E] mb-4">{{ $book->penulis }}</p>
+                            
+                            <div class="mt-auto pt-4 border-t border-[#E8E4D5] flex items-center justify-between">
+                                <div>
+                                    <p class="text-[9px] text-[#7A6A5E] uppercase tracking-wider">ISBN:</p>
+                                    <p class="text-xs font-bold font-mono">{{ $book->isbn }}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg overflow-hidden shadow-sm flex flex-col">
-                    <div class="h-64 bg-[#EAE6D7] relative p-4 flex items-center justify-center">
-                        <span class="absolute top-3 right-3 bg-[#FADCDC] text-[#A53A3A] text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide z-10 shadow-sm">On Loan</span>
-                        <div class="w-32 h-48 bg-[#6D2121] rounded shadow-lg border-l-4 border-[#4A1616] flex items-center justify-center p-2 text-center text-white font-serif text-xs">
-                           Vol. I
-                        </div>
+                @empty
+                    <div class="col-span-4 py-12 text-center text-[#7A6A5E]">
+                        <p>No books currently in the catalog. Time to add some!</p>
                     </div>
-                    <div class="p-5 flex-1 flex flex-col">
-                        <p class="text-[10px] text-[#7A6A5E] uppercase tracking-widest font-semibold mb-1">History</p>
-                        <h3 class="font-serif text-xl font-bold leading-tight mb-1">The Decline and Fall of the Roman Empire</h3>
-                        <p class="text-sm text-[#7A6A5E] mb-4">Edward Gibbon</p>
-                        
-                        <div class="mt-auto pt-4 border-t border-[#E8E4D5] flex items-center justify-between">
-                            <div>
-                                <p class="text-[9px] text-[#7A6A5E] uppercase tracking-wider">Due:</p>
-                                <p class="text-xs font-bold font-mono">Oct 12</p>
-                            </div>
-                            <div class="flex gap-2 text-[#7A6A5E]">
-                                <button class="hover:text-[#4A3B32]"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></button>
-                                <button class="hover:text-[#4A3B32]"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
-                                <button class="hover:text-[#4A3B32]"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg overflow-hidden shadow-sm flex flex-col">
-                    <div class="h-64 bg-[#EAE6D7] relative p-4 flex items-center justify-center">
-                        <span class="absolute top-3 right-3 bg-[#3A2A22] text-[#F6F4E8] text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide z-10 shadow-sm">Reserved</span>
-                        <div class="w-32 h-48 bg-[#D4C3A3] rounded shadow-lg border-l-4 border-[#A89A7E] flex items-center justify-center p-2 text-center text-black font-serif text-xs opacity-90">
-                           <div class="border border-black w-full h-full p-1">MATH</div>
-                        </div>
-                    </div>
-                    <div class="p-5 flex-1 flex flex-col">
-                        <p class="text-[10px] text-[#7A6A5E] uppercase tracking-widest font-semibold mb-1">Sciences</p>
-                        <h3 class="font-serif text-xl font-bold leading-tight mb-1">Principia Mathematica</h3>
-                        <p class="text-sm text-[#7A6A5E] mb-4">Isaac Newton</p>
-                        
-                        <div class="mt-auto pt-4 border-t border-[#E8E4D5] flex items-center justify-between">
-                            <div>
-                                <p class="text-[9px] text-[#7A6A5E] uppercase tracking-wider">Hold:</p>
-                                <p class="text-xs font-bold font-mono">2 Days</p>
-                            </div>
-                            <div class="flex gap-2 text-[#7A6A5E]">
-                                <button class="hover:text-[#4A3B32]"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></button>
-                                <button class="hover:text-[#4A3B32]"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
-                                <button class="text-[#3B6A2E]"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg overflow-hidden shadow-sm flex flex-col">
-                    <div class="h-64 bg-[#EAE6D7] relative p-4 flex items-center justify-center">
-                        <span class="absolute top-3 right-3 bg-[#DDF0D6] text-[#3B6A2E] text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide z-10 shadow-sm">Available</span>
-                        <div class="w-32 h-48 bg-[#1A365D] rounded shadow-lg border-l-4 border-[#0F1E36] flex flex-col justify-between p-2 text-center text-[#D4AF37] font-serif">
-                           <div class="border-t border-b border-[#D4AF37] py-1 mt-4 text-[10px]">MOBY<br>DICK</div>
-                           <div class="text-[8px] mb-2">MELVILLE</div>
-                        </div>
-                    </div>
-                    <div class="p-5 flex-1 flex flex-col">
-                        <p class="text-[10px] text-[#7A6A5E] uppercase tracking-widest font-semibold mb-1">Classic Fiction</p>
-                        <h3 class="font-serif text-xl font-bold leading-tight mb-1">Moby Dick</h3>
-                        <p class="text-sm text-[#7A6A5E] mb-4">Herman Melville</p>
-                        
-                        <div class="mt-auto pt-4 border-t border-[#E8E4D5] flex items-center justify-between">
-                            <div>
-                                <p class="text-[9px] text-[#7A6A5E] uppercase tracking-wider">Loc:</p>
-                                <p class="text-xs font-bold font-mono">813.M4</p>
-                            </div>
-                            <div class="flex gap-2 text-[#7A6A5E]">
-                                <button class="hover:text-[#4A3B32]"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></button>
-                                <button class="hover:text-[#4A3B32]"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
-                                <button class="hover:text-[#4A3B32]"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+                @endforelse
+            </div>               
+ 
             </div>
 
             <div class="flex justify-center mb-8">
