@@ -44,16 +44,16 @@
 
         <!-- Sisi Tengah: Menu Navigasi -->
         <div class="flex items-center justify-center gap-16 text-[19px] font-semibold tracking-wider">
-          <a href="{{ url('/') }}" class="text-[#2F1C17]/80 hover:text-[#2F1C17] pb-1 border-b-2 border-transparent hover:border-[#2F1C17] transition-all">
-            Catalog
-          </a>
-          <a href="#" class="text-[#2F1C17]/80 hover:text-[#2F1C17] pb-1 border-b-2 border-transparent hover:border-[#2F1C17] transition-all">
-            Categories
-          </a>
-          <a href="#" class="text-[#2F1C17]/80 hover:text-[#2F1C17] pb-1 border-b-2 border-transparent hover:border-[#2F1C17] transition-all">
-            Reading List
-          </a>
-        </div>
+      <a href="{{ route('user.dashboard') }}" class="text-[#2F1C17]/80 hover:text-[#2F1C17] pb-1 border-b-2 border-transparent hover:border-[#2F1C17] transition-all">
+        Catalog
+      </a>
+      <a href="{{ route('user.categories') }}" class="text-[#2F1C17]/80 hover:text-[#2F1C17] pb-1 border-b-2 border-transparent hover:border-[#2F1C17] transition-all">
+        Categories
+      </a>
+      <a href="{{ route('user.reading_list_view') }}" class="text-[#2F1C17]/80 hover:text-[#2F1C17] pb-1 border-b-2 border-transparent hover:border-[#2F1C17] transition-all">
+        Reading List
+      </a>
+    </div>
 
         <!-- Sisi Kanan: Profil User / Tombol Login -->
         <div class="flex-1 flex justify-end items-center">
@@ -115,15 +115,24 @@
                 <!-- TOMBOL PINJAM & FAVORIT -->
                 <div class="mt-6 space-y-4">
 
-                    <!-- 1. KONDISI TOMBOL PINJAM BUKU -->
-                    @if($book->status === 'Borrowed')
-                        <!-- Tampilan jika buku sedang dipinjam (Warna abu-abu & disabled) -->
+                    <!-- 1. KONDISI TOMBOL PINJAM BUKU (BERDASARKAN AKUN USER AKTIF) -->
+                    @php
+                        // Cek apakah user yang sedang login saat ini sudah meminjam buku ini dan belum mengembalikannya
+                        $isBorrowedByUser = \App\Models\DetailPeminjaman::where('book_id', $book->id)
+                            ->whereHas('borrow', function($query) {
+                                $query->where('user_id', Auth::id())
+                                      ->whereNull('tanggal_kembali');
+                            })->exists();
+                    @endphp
+
+                    @if($isBorrowedByUser)
+                        <!-- Tampilan jika USER INI sudah meminjam buku ini (Warna abu-abu & disabled hanya untuk akun ini) -->
                         <button disabled 
-                                class="w-full bg-[#5C4D4A]/50 text-gray-400 py-5 rounded-md text-2xl font-semibold cursor-not-allowed shadow-inner border border-[#BDAF9C]/30">
+                                class="w-full bg-[#DDD7C0] text-[#2F1C17]/60 py-5 rounded-md text-2xl font-semibold cursor-not-allowed shadow-inner border border-[#C5BDAA]">
                             Borrowed
                         </button>
                     @else
-                        <!-- Tampilan jika buku tersedia untuk dipinjam (Warna cokelat & aktif) -->
+                        <!-- Tampilan jika USER INI belum meminjam buku ini (Tombol cokelat aktif siap dipinjam) -->
                         <form action="{{ route('buku.borrow', $book->id) }}" method="POST">
                             @csrf
                             <button type="submit" 
@@ -137,19 +146,18 @@
                     <form action="{{ route('buku.reading_list', $book->id) }}" method="POST">
                         @csrf
                         @if(session('reading_list') && in_array($book->id, session('reading_list')))
-                            <!-- Jika buku SUDAH dimasukkan ke dalam daftar bacaan -->
                             <button type="submit" 
                                     class="w-full bg-[#EADBCB] border border-[#B7A693] py-5 rounded-md hover:bg-[#D8C7B7] transition text-lg font-semibold text-[#2F1C17] shadow-sm">
                                 ✓ Added to Reading List
                             </button>
                         @else
-                            <!-- Jika buku BELUM dimasukkan ke dalam daftar bacaan -->
                             <button type="submit" 
                                     class="w-full border border-[#B7A693] py-5 rounded-md hover:bg-[#EEE6D6] transition text-lg font-medium text-[#2F1C17]">
                                 Add to Reading List
                             </button>
                         @endif
                     </form>
+
                 </div>
 
                 <!-- DETAIL / SPESIFIKASI BUKU (Dinamis dari DB) -->
