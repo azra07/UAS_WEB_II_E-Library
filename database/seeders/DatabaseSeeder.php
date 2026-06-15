@@ -20,6 +20,20 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
         ]);
 
+        User::create([
+            'name' => 'Akbar',
+            'email' => 'akbar@admin.com',
+            'password' => bcrypt('12345678'),
+            'role' => 'admin',
+        ]);
+
+        User::create([
+            'name' => 'Tima',
+            'email' => 'tima@user.com',
+            'password' => bcrypt('12345678'),
+            'role' => 'user',
+        ]);
+
         // 2. Buat 5 Kategori
         $categories = ['Teknologi', 'Sains', 'Sejarah', 'Fiksi', 'Agama'];
         foreach ($categories as $cat) {
