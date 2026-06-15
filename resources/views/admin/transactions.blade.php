@@ -44,28 +44,17 @@
         </div>
 
         <div class="p-6 border-t border-[#E8E4D5] space-y-2">
-            <a href="#" class="flex items-center gap-3 text-sm text-[#7A6A5E] hover:text-[#3A2A22] transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                Help Center
-            </a>
-            <a href="#" class="flex items-center gap-3 text-sm text-[#7A6A5E] hover:text-[#3A2A22] transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                Logout
-            </a>
+            <form method="POST" action="{{ route('logout') }}" class="m-0 p-0">
+                @csrf
+                <button type="submit" class="flex items-center gap-3 text-sm text-[#7A6A5E] hover:text-[#3A2A22] transition w-full text-left bg-transparent border-none cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    Logout
+                </button>
+            </form>
         </div>
     </aside>
 
     <main class="flex-1 flex flex-col overflow-y-auto">
-        
-        <header class="flex items-center justify-between px-8 py-6 border-b border-[#E8E4D5] bg-[#F6F4E8]">
-            <h2 class="font-serif text-xl font-bold">Lexicon Librum</h2>
-            <div class="flex items-center gap-4">
-                <button class="text-[#7A6A5E] hover:text-[#3A2A22]"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg></button>
-                <div class="w-8 h-8 rounded-full bg-[#4A3B32] overflow-hidden border-2 border-[#E8E4D5]">
-                    <img src="https://ui-avatars.com/api/?name=Admin&background=4A3B32&color=fff" alt="Profile" class="w-full h-full object-cover">
-                </div>
-            </div>
-        </header>
 
         <div class="p-8">
             
@@ -89,21 +78,35 @@
 
             <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg shadow-sm overflow-hidden mb-8">
                 
-                <div class="p-5 border-b border-[#E8E4D5] flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#F9F8F3]">
-                    <div class="relative w-full md:w-96">
-                        <svg class="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        <input type="text" placeholder="Search by borrower, book title, or ID..." class="w-full pl-9 pr-4 py-2 border border-[#E8E4D5] bg-white rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#4A3B32]">
+                    <form action="{{ route('transactions.index') }}" method="GET" class="p-5 border-b border-[#E8E4D5] flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#F9F8F3]">
+                    
+                    <div class="relative w-full md:w-96 flex shadow-sm">
+                        <input type="text" 
+                               name="search" 
+                               value="{{ request('search') }}" 
+                               placeholder="Search by borrower, book title, or ID..." 
+                               class="w-full pl-4 pr-4 py-2 border border-[#E8E4D5] bg-white rounded-l-md text-sm focus:outline-none focus:border-[#4A3B32] focus:ring-1 focus:ring-[#4A3B32]">
+                        
+                        <button type="submit" class="bg-[#4A3B32] text-white px-4 py-2 rounded-r-md hover:bg-[#3A2A22] transition flex items-center justify-center border border-[#4A3B32]">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </button>
                     </div>
+
                     <div class="flex items-center gap-3">
-                        <select class="px-4 py-2 border border-[#E8E4D5] bg-white rounded-md text-sm focus:outline-none text-[#5A4A42]">
-                            <option>All Statuses</option>
-                            <option>On Loan</option>
-                            <option>Returned</option>
-                            <option>Overdue</option>
+                        <select name="status" onchange="this.form.submit()" class="px-4 py-2 border border-[#E8E4D5] bg-white rounded-md text-sm focus:outline-none text-[#5A4A42]">
+                            <option value="All Statuses" {{ request('status') == 'All Statuses' ? 'selected' : '' }}>All Statuses</option>
+                            <option value="On Loan" {{ request('status') == 'On Loan' ? 'selected' : '' }}>On Loan</option>
+                            <option value="Returned" {{ request('status') == 'Returned' ? 'selected' : '' }}>Returned</option>
+                            <option value="Overdue" {{ request('status') == 'Overdue' ? 'selected' : '' }}>Overdue</option>
                         </select>
-                        <input type="date" class="px-4 py-2 border border-[#E8E4D5] bg-white rounded-md text-sm focus:outline-none text-[#5A4A42]">
+                        
+                        <input type="date" name="date" value="{{ request('date') }}" onchange="this.form.submit()" class="px-4 py-2 border border-[#E8E4D5] bg-white rounded-md text-sm focus:outline-none text-[#5A4A42]">
+                        
+                        @if(request()->hasAny(['search', 'status', 'date']) && (request('search') || request('status') != 'All Statuses' || request('date')))
+                            <a href="{{ route('transactions.index') }}" class="text-[11px] font-bold uppercase tracking-wider text-[#A53A3A] hover:underline ml-2">Clear</a>
+                        @endif
                     </div>
-                </div>
+                </form>
 
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm whitespace-nowrap">
@@ -190,14 +193,9 @@
 
                 <div class="p-4 border-t border-[#E8E4D5] flex items-center justify-between text-xs text-[#7A6A5E] bg-[#FCFBFA]">
                     <p>Showing 1 to 4 of 2,145 transactions</p>
-                    <div class="flex items-center gap-1">
-                        <button class="px-2.5 py-1 border border-[#E8E4D5] rounded hover:bg-[#EAE6D7] disabled:opacity-50">&lt;</button>
-                        <button class="px-2.5 py-1 border border-[#4A3B32] bg-[#4A3B32] text-white rounded">1</button>
-                        <button class="px-2.5 py-1 border border-[#E8E4D5] rounded hover:bg-[#EAE6D7]">2</button>
-                        <button class="px-2.5 py-1 border border-[#E8E4D5] rounded hover:bg-[#EAE6D7]">3</button>
-                        <span class="px-1">...</span>
-                        <button class="px-2.5 py-1 border border-[#E8E4D5] rounded hover:bg-[#EAE6D7]">&gt;</button>
-                    </div>
+                <div class="p-4 border-t border-[#E8E4D5] bg-[#FCFBFA]">
+                    {{ $transactions->links() }}
+                </div>  
                 </div>
 
             </div>

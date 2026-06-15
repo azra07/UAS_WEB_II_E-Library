@@ -51,14 +51,13 @@
         </div>
 
         <div class="p-6 border-t border-[#E8E4D5] space-y-2">
-            <a href="#" class="flex items-center gap-3 text-sm text-[#7A6A5E] hover:text-[#3A2A22] transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                Help Center
-            </a>
-            <a href="#" class="flex items-center gap-3 text-sm text-[#7A6A5E] hover:text-[#3A2A22] transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                Logout
-            </a>
+            <form method="POST" action="{{ route('logout') }}" class="m-0 p-0">
+                @csrf
+                <button type="submit" class="flex items-center gap-3 text-sm text-[#7A6A5E] hover:text-[#3A2A22] transition w-full text-left bg-transparent border-none cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    Logout
+                </button>
+            </form>
         </div>
     </aside>
 
@@ -66,16 +65,7 @@
         
         <header class="flex items-center justify-between px-8 py-6">
             <div class="invisible md:visible"></div> <div class="flex items-center gap-6">
-                <div class="relative">
-                    <svg class="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    <input type="text" placeholder="Search catalog..." class="pl-9 pr-4 py-2 border border-[#E8E4D5] bg-transparent rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[#4A3B32] w-64">
-                </div>
                 <div class="flex items-center gap-4">
-                    <button class="text-[#7A6A5E] hover:text-[#3A2A22]"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg></button>
-                    <button class="text-[#7A6A5E] hover:text-[#3A2A22]"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></button>
-                    <div class="w-8 h-8 rounded-full bg-[#4A3B32] overflow-hidden border-2 border-[#E8E4D5]">
-                        <img src="https://ui-avatars.com/api/?name=Admin&background=4A3B32&color=fff" alt="Profile" class="w-full h-full object-cover">
-                    </div>
                 </div>
             </div>
         </header>
@@ -84,69 +74,95 @@
             
             <div class="flex justify-between items-end mb-8">
                 <h2 class="font-serif text-4xl font-bold tracking-tight">Dashboard Overview</h2>
-                <p class="text-xs text-[#7A6A5E] uppercase tracking-wider font-medium">Last Updated: Today, 09:41 AM</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
                 <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg p-5 shadow-sm relative overflow-hidden">
                     <p class="text-[11px] text-[#7A6A5E] uppercase tracking-wider font-semibold mb-2">Total Books</p>
-                    <h3 class="font-serif text-3xl font-bold mb-1">12,450</h3>
-                    <p class="text-xs text-green-700 font-medium flex items-center gap-1">↗ +124 this month</p>
+                    <h3 class="font-serif text-3xl font-bold mb-1">{{ number_format($totalBooks) }}</h3>
                 </div>
                 <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg p-5 shadow-sm relative overflow-hidden">
                     <p class="text-[11px] text-[#7A6A5E] uppercase tracking-wider font-semibold mb-2">Total Members</p>
-                    <h3 class="font-serif text-3xl font-bold mb-1">3,200</h3>
-                    <p class="text-xs text-green-700 font-medium flex items-center gap-1">↗ +45 this month</p>
+                    <h3 class="font-serif text-3xl font-bold mb-1">{{ number_format($totalMembers) }}</h3>
                 </div>
                 <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg p-5 shadow-sm">
                     <p class="text-[11px] text-[#7A6A5E] uppercase tracking-wider font-semibold mb-2">Active Loans</p>
-                    <h3 class="font-serif text-3xl font-bold mb-1">450</h3>
-                    <p class="text-xs text-[#7A6A5E] font-medium">Steady activity</p>
+                    <h3 class="font-serif text-3xl font-bold mb-1">{{ number_format($activeLoans) }}</h3>
                 </div>
-                <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg p-5 shadow-sm border-l-4 border-l-[#A53A3A]">
+                <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg p-5 shadow-sm border-l-4 {{ $lateReturns > 0 ? 'border-l-[#A53A3A]' : 'border-l-[#3B6A2E]' }}">
                     <p class="text-[11px] text-[#7A6A5E] uppercase tracking-wider font-semibold mb-2">Late Returns</p>
-                    <h3 class="font-serif text-3xl font-bold text-[#A53A3A] mb-1">24</h3>
-                    <p class="text-xs text-[#A53A3A] font-medium">Action required</p>
+                    <h3 class="font-serif text-3xl font-bold {{ $lateReturns > 0 ? 'text-[#A53A3A]' : 'text-[#3A2A22]' }} mb-1">{{ $lateReturns }}</h3>
                 </div>
             </div>
-
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                <div class="lg:col-span-2 bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg p-6 shadow-sm min-h-[300px]">
-                    <h4 class="font-serif text-lg font-bold mb-4">Monthly Borrowing Trends</h4>
-                    <div class="w-full h-48 border-b border-[#E8E4D5] border-dashed relative mt-8">
-                        <div class="absolute bottom-0 left-[10%] w-[8%] h-[40%] bg-[#D5D0C5] rounded-t-sm"></div>
-                        <div class="absolute bottom-0 left-[25%] w-[8%] h-[60%] bg-[#D5D0C5] rounded-t-sm"></div>
-                        <div class="absolute bottom-0 left-[40%] w-[8%] h-[90%] bg-[#6D5A4E] rounded-t-sm"></div>
-                        <div class="absolute bottom-0 left-[55%] w-[8%] h-[55%] bg-[#D5D0C5] rounded-t-sm"></div>
-                        <div class="absolute bottom-0 left-[70%] w-[8%] h-[70%] bg-[#D5D0C5] rounded-t-sm"></div>
-                        <div class="absolute bottom-0 left-[85%] w-[8%] h-[45%] bg-[#D5D0C5] rounded-t-sm"></div>
+
+            <div class="lg:col-span-2 bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg p-6 shadow-sm min-h-[300px] flex flex-col">
+                    <h4 class="font-serif text-lg font-bold mb-4">Weekly Borrowing Trends</h4>
+                    
+                    <div class="w-full flex-1 border-b border-[#E8E4D5] border-dashed relative mt-4 flex items-end justify-between px-4 pb-1 h-48">
+                        @foreach($weeklyData as $data)
+                            @php 
+                                // Calculate bar height percentage (min 5% so it's visible even at 0)
+                                $height = max(($data['count'] / $maxBorrows) * 100, 5); 
+                            @endphp
+                            
+                            <div class="w-[8%] h-full flex flex-col justify-end items-center group">
+                                
+                                <div class="w-full bg-[#6D5A4E] rounded-t-sm transition-all duration-500 hover:bg-[#4A3B32] relative flex justify-center" style="height: {{ $height }}%;">
+                                    <span class="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-bold text-[#4A3B32] bg-[#EAE6D7] px-2 py-1 rounded absolute -top-8">
+                                        {{ $data['count'] }}
+                                    </span>
+                                </div>
+                                
+                                <span class="text-[10px] text-[#7A6A5E] font-medium mt-2">{{ $data['day'] }}</span>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
 
                 <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg p-6 shadow-sm">
                     <h4 class="font-serif text-lg font-bold mb-6">Book Categories</h4>
+                    
+                    @php
+                        // Array of academia-themed colors for the chart
+                        $colors = ['#4A3B32', '#8E7C6F', '#D5D0C5', '#A53A3A', '#3B6A2E'];
+                        $gradientString = '';
+                        $cumulativePercent = 0;
+                        
+                        foreach($categories as $index => $cat) {
+                            $percent = ($cat->books_count / $totalCategorizedBooks) * 100;
+                            $color = $colors[$index % count($colors)];
+                            $gradientString .= "{$color} {$cumulativePercent}% " . ($cumulativePercent + $percent) . "%, ";
+                            $cumulativePercent += $percent;
+                        }
+                        $gradientString = rtrim($gradientString, ', ');
+                    @endphp
+
                     <div class="flex justify-center mb-6">
-                        <div class="w-32 h-32 rounded-xl bg-[#6D5A4E] border-[12px] border-[#4A3B32] flex items-center justify-center">
-                           <div class="w-16 h-16 bg-[#FCFBFA] rounded-md"></div>
+                        <div class="w-32 h-32 rounded-full flex items-center justify-center shadow-inner" style="background: conic-gradient({{ $gradientString ?: '#EAE6D7 0% 100%' }});">
+                           <div class="w-16 h-16 bg-[#FCFBFA] rounded-full shadow-sm"></div>
                         </div>
                     </div>
-                    <div class="space-y-3 mt-8">
-                        <div class="flex justify-between items-center text-sm">
-                            <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#4A3B32]"></span> Academic</span>
-                            <span class="font-bold">60%</span>
-                        </div>
-                        <div class="flex justify-between items-center text-sm">
-                            <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#8E7C6F]"></span> Fiction</span>
-                            <span class="font-bold">40%</span>
-                        </div>
+
+                    <div class="space-y-3 mt-8 max-h-[120px] overflow-y-auto pr-2">
+                        @foreach($categories as $index => $cat)
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full" style="background-color: {{ $colors[$index % count($colors)] }}"></span> 
+                                    {{ Str::limit($cat->nama_kategori, 15) }}
+                                </span>
+                                <span class="font-bold text-xs">{{ round(($cat->books_count / $totalCategorizedBooks) * 100) }}%</span>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
-            </div>
+            </div>  
 
             <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg shadow-sm overflow-hidden">
+                <div class="bg-[#FCFBFA] border border-[#E8E4D5] rounded-lg shadow-sm overflow-hidden">
                 <div class="flex justify-between items-center p-6 border-b border-[#E8E4D5]">
                     <h4 class="font-serif text-lg font-bold">Recent Transactions</h4>
-                    <a href="#" class="text-[11px] font-bold uppercase tracking-wider text-[#4A3B32] hover:underline">View All →</a>
+                    <a href="{{ url('admin/transactions') }}" class="text-[11px] font-bold uppercase tracking-wider text-[#4A3B32] hover:underline">View All →</a>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm">
@@ -158,51 +174,37 @@
                                 <th class="px-6 py-3 font-semibold text-right">Status</th>
                             </tr>
                         </thead>
+
                         <tbody class="divide-y divide-[#E8E4D5]">
-                            <tr class="hover:bg-[#FAF8F2] transition">
-                                <td class="px-6 py-4 flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-[#EAD4C8] text-[#8C5D42] flex items-center justify-center text-xs font-bold">JS</div>
-                                    <span class="font-medium">John Smith</span>
-                                </td>
-                                <td class="px-6 py-4 text-[#5A4A42]">The Architecture of Happiness</td>
-                                <td class="px-6 py-4 text-[#7A6A5E]">Oct 24, 2023</td>
-                                <td class="px-6 py-4 text-right">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-[#E8E4D5] text-[#5A4A42]">On Loan</span>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-[#FAF8F2] transition">
-                                <td class="px-6 py-4 flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-[#4A3B32] text-[#FCFBFA] flex items-center justify-center text-xs font-bold">ED</div>
-                                    <span class="font-medium">Eleanor Dashwood</span>
-                                </td>
-                                <td class="px-6 py-4 text-[#5A4A42]">Principia Mathematica</td>
-                                <td class="px-6 py-4 text-[#7A6A5E]">Oct 23, 2023</td>
-                                <td class="px-6 py-4 text-right">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-[#DDF0D6] text-[#3B6A2E]">Returned</span>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-[#FAF8F2] transition">
-                                <td class="px-6 py-4 flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-[#3A2A22] text-[#FCFBFA] flex items-center justify-center text-xs font-bold">MR</div>
-                                    <span class="font-medium">Marcus Reed</span>
-                                </td>
-                                <td class="px-6 py-4 text-[#5A4A42]">History of the Peloponnesian War</td>
-                                <td class="px-6 py-4 text-[#7A6A5E]">Oct 21, 2023</td>
-                                <td class="px-6 py-4 text-right">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-[#E8E4D5] text-[#5A4A42]">On Loan</span>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-[#FAF8F2] transition">
-                                <td class="px-6 py-4 flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-[#8E6C5F] text-[#FCFBFA] flex items-center justify-center text-xs font-bold">AW</div>
-                                    <span class="font-medium">Alice Walker</span>
-                                </td>
-                                <td class="px-6 py-4 text-[#5A4A42]">Introduction to Algorithms, 3rd Edition</td>
-                                <td class="px-6 py-4 text-[#7A6A5E]">Oct 20, 2023</td>
-                                <td class="px-6 py-4 text-right">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-[#FADCDC] text-[#A53A3A]">Late</span>
-                                </td>
-                            </tr>
+                            @forelse($recentTransactions as $trx)
+                                @php
+                                    $book = $trx->details->first()->book ?? null;
+                                    $isOverdue = is_null($trx->tanggal_kembali) && $trx->due_date && $trx->due_date->isPast();
+                                @endphp
+                                <tr class="hover:bg-[#FAF8F2] transition">
+                                    <td class="px-6 py-4 flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-[#EAD4C8] text-[#8C5D42] flex items-center justify-center text-xs font-bold">
+                                            {{ strtoupper(substr($trx->user->name, 0, 2)) }}
+                                        </div>
+                                        <span class="font-medium">{{ $trx->user->name }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-[#5A4A42]">{{ $book ? Str::limit($book->judul, 30) : 'Unknown' }}</td>
+                                    <td class="px-6 py-4 text-[#7A6A5E]">{{ $trx->tanggal_pinjam->format('M d, Y') }}</td>
+                                    <td class="px-6 py-4 text-right">
+                                        @if($trx->tanggal_kembali)
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-[#DDF0D6] text-[#3B6A2E]">Returned</span>
+                                        @elseif($isOverdue)
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-[#FADCDC] text-[#A53A3A]">Late</span>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-[#E8E4D5] text-[#5A4A42]">On Loan</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="px-6 py-8 text-center text-sm text-[#7A6A5E]">No recent transactions.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
