@@ -183,21 +183,33 @@
         <!-- BOOK CARD -->
         <div class="book-card">
           <div class="overflow-hidden rounded-lg custom-shadow">
+            <!-- Menyesuaikan pemanggilan cover_image dari database -->
             <img
-              src="{{ $book->image ? asset('storage/' . $book->image) : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400' }}"
-              alt="{{ $book->title }}"
+              src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400' }}"
+              alt="{{ $book->judul }}"
               class="w-full h-[470px] object-cover"
             >
           </div>
 
-          <h2 class="title-font text-3xl mt-5 font-semibold line-clamp-2 cursor-pointer hover:underline" title="{{ $book->title }}">
-            {{ $book->title }}
+          <!-- Menampilkan JUDUL buku (menggunakan 'judul') -->
+          <h2 class="title-font text-3xl mt-5 font-semibold line-clamp-2 cursor-pointer hover:underline text-[#2F1C17]" title="{{ $book->judul }}">
+            {{ $book->judul }}
           </h2>
 
-          <p class="text-[#6B5B50] mt-1">
-            {{ $book->publisher->name ?? 'Unknown Publisher' }}
+          <!-- Menampilkan PENULIS buku (menggunakan 'penulis') -->
+          <p class="text-[#6B5B50] mt-1 font-medium">
+            By {{ $book->penulis }}
           </p>
 
+          <!-- Menampilkan ISBN & STATUS buku langsung dari database Anda -->
+          <div class="flex items-center justify-between text-xs text-[#8A7B6E] mt-2 border-t border-[#D8D2C0]/50 pt-2">
+            <span>ISBN: {{ $book->isbn }}</span>
+            <span class="px-2 py-0.5 bg-green-100 text-green-800 rounded font-semibold uppercase text-[10px]">
+              {{ $book->status }}
+            </span>
+          </div>
+
+          <!-- Bagian Rating Bintang -->
           <div class="flex items-center gap-2 mt-3 text-[#6E584D]">
             @php
               $ratingVal = round($book->ratings->avg('rating') ?? 5);
