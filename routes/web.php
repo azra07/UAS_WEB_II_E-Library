@@ -34,11 +34,13 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/user/dashboard', [BookController::class, 'userDashboard'])->name('user.dashboard');
     Route::get('/user/buku/{id}', [BookController::class, 'userShow'])->name('buku.user.show');
+    Route::get('/user/categories', [BookController::class, 'userCategories'])->name('user.categories');
+    Route::get('/user/reading-list', [BookController::class, 'userReadingList'])->name('user.reading_list_view');
 
     // Rute untuk memproses pengiriman ulasan buku
     Route::post('/user/buku/{id}/review', [BookController::class, 'storeReview'])->name('buku.review.store');
     Route::post('/user/buku/{id}/borrow', [BookController::class, 'borrowBook'])->name('buku.borrow');
-Route::post('/user/buku/{id}/reading-list', [BookController::class, 'toggleReadingList'])->name('buku.reading_list');
+    Route::post('/user/buku/{id}/reading-list', [BookController::class, 'toggleReadingList'])->name('buku.reading_list');
 
     // 2. ROUTE KHUSUS ADMIN (Dilindungi Middleware Admin)
     // Catatan: Pastikan Anda sudah mendaftarkan middleware 'admin' di bootstrap/app.php
