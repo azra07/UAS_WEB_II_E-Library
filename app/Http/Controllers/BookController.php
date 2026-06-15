@@ -84,7 +84,9 @@ public function index(Request $request)
         $categories = Category::all();
 
         // Mengembalikan view User.Home (perhatikan kapital 'U' sesuai folder Anda)
-        return view('User.Home', compact('books', 'categories'));
+        $title = "The Scholar's Catalog";
+        return view('User.Home', compact('books', 'categories', 'title'));
+        
     }
 
     public function create()
@@ -211,8 +213,7 @@ public function show(string $id)
 
     public function userShow($id)
     {
-        // 1. LAZY CHECK: Cek apakah ada peminjaman aktif yang sudah melewati batas waktu seminggu (due_date)
-        // Jika ada, kembalikan buku secara otomatis ke sistem
+        // 1. LAZY CHECK: Cek semua peminjaman aktif yang sudah melewati due_date
         $overdueLoans = DetailPeminjaman::where('book_id', $id)
             ->whereHas('borrow', function($query) {
                 $query->whereNull('tanggal_kembali')
@@ -222,14 +223,10 @@ public function show(string $id)
         if ($overdueLoans->isNotEmpty()) {
             foreach ($overdueLoans as $loan) {
                 $borrow = $loan->borrow;
-                $borrow->tanggal_kembali = now(); // Set tanggal kembali hari ini
+                $borrow->tanggal_kembali = now();
                 $borrow->save();
             }
-
-            // Kembalikan status buku menjadi Available
-            $book = Book::findOrFail($id);
-            $book->status = 'Available';
-            $book->save();
+            // Kita TIDAK perlu mengubah status buku ke 'Available' di sini karena buku selalu 'Available' secara global
         }
 
         // 2. Ambil data buku terbaru beserta ulasannya
@@ -239,33 +236,38 @@ public function show(string $id)
     }
 
     /**
-     * Memproses Transaksi Peminjaman Buku (Borrow)
+     * Memproses Transaksi Peminjaman Buku (Borrow) Spesifik per User
      */
     public function borrowBook($id)
     {
         $book = Book::findOrFail($id);
 
-        if ($book->status !== 'Available') {
-            return redirect()->back()->with('error', 'This book is currently borrowed or unavailable.');
+        // CEK APAKAH USER INI SUDAH MEMINJAM BUKU INI DAN BELUM MENGEMBALIKANNYA
+        $alreadyBorrowed = DetailPeminjaman::where('book_id', $id)
+            ->whereHas('borrow', function($query) {
+                $query->where('user_id', Auth::id())
+                      ->whereNull('tanggal_kembali');
+            })->exists();
+
+        if ($alreadyBorrowed) {
+            return redirect()->back()->with('error', 'You have already borrowed this book.');
         }
 
         // 1. Buat data transaksi di tabel borrows
         $borrow = new Borrow();
         $borrow->user_id = Auth::id();
         $borrow->tanggal_pinjam = now();
-        $borrow->due_date = now()->addDays(7); // Batas waktu peminjaman otomatis 1 minggu (7 hari)
+        $borrow->due_date = now()->addDays(7); // Masa pinjam 1 minggu
         $borrow->tanggal_kembali = null;
         $borrow->save();
 
-        // 2. Buat rincian data di tabel detail_peminjamen
+        // 2. Buat rincian data di tabel detail_peminjaman
         $detail = new DetailPeminjaman();
         $detail->borrow_id = $borrow->id;
         $detail->book_id = $id;
         $detail->save();
 
-        // 3. Ubah status buku menjadi Borrowed
-        $book->status = 'Borrowed';
-        $book->save();
+        // CATATAN: KITA TIDAK MENGUBAH $book->status = 'Borrowed' agar user lain tetap bisa meminjam buku ini secara online!
 
         return redirect()->back()->with('success', 'Book successfully borrowed! Please return it by ' . $borrow->due_date->format('M d, Y') . ' (7 days).');
     }
@@ -312,5 +314,32 @@ public function show(string $id)
 
         // 3. Kembali dengan pesan sukses
         return redirect()->back()->with('success', 'Thank you! Your review has been submitted.');
+    }
+
+    public function userCategories()
+    {
+        $categories = Category::all();
+        // Mengarah ke resources/views/User/Kategori.blade.php
+        return view('User.Kategori', compact('categories'));
+    }
+
+    /**
+     * Menampilkan Halaman Daftar Bacaan (Reading List) User
+     */
+    public function userReadingList()
+    {
+        // Mengambil semua ID buku yang disimpan user di dalam session reading_list
+        $bookIds = session()->get('reading_list', []);
+        
+        // Query hanya buku-buku yang ID-nya ada di dalam daftar bacaan user
+        $books = Book::with(['category', 'publisher', 'ratings'])
+            ->whereIn('id', $bookIds)
+            ->paginate(10);
+            
+        $categories = Category::all();
+        $title = "My Reading List"; // Mengubah judul halaman secara dinamis
+
+        // Menggunakan kembali (reuse) tampilan Home agar praktis dan langsung berfungsi dengan desain indah Anda
+        return view('User.Home', compact('books', 'categories', 'title'));
     }
 }
