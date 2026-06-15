@@ -100,42 +100,48 @@ public function index(Request $request)
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-        {
-            $validated = $request->validate([
-                'judul' => 'required|string|max:255',
-                'penulis' => 'required|string|max:255',
-                'isbn' => 'required|string|max:50',
-                'language' => 'required|string',
-                'category_name' => 'required|string|max:255',
-                'publisher_id' => 'required|exists:publishers,id',
-                'cover_image' => 'nullable|image|max:2048', // Ensure it's an image under 2MB
-            ]);
+    {
+        // 1. Validate the incoming text fields
+        $validated = $request->validate([
+            'judul' => 'required|string|max:255',
+            'penulis' => 'required|string|max:255',
+            'isbn' => 'required|string|max:20|unique:books,isbn',
+            'language' => 'required|string',
+            'category_name' => 'required|string',
+            'publisher_name' => 'required|string', // Changed from publisher_id
+            'cover_image' => 'nullable|image|max:2048',
+        ]);
 
-            // Handle the Image Upload
-            $imagePath = null;
-            if ($request->hasFile('cover_image')) {
-                // Stores the file in storage/app/public/covers
-                $imagePath = $request->file('cover_image')->store('covers', 'public'); 
-            }
+        // 2. Find or Create the Category
+        $category = \App\Models\Category::firstOrCreate([
+            'nama_kategori' => $validated['category_name']
+        ]);
 
-            $category = \App\Models\Category::firstOrCreate(
-                ['nama_kategori' => $validated['category_name']],
-                ['deskripsi' => 'Auto-generated category']
-            );
+        // 3. Find or Create the Publisher (NEW LOGIC)
+        $publisher = \App\Models\Publisher::firstOrCreate([
+            'nama_penerbit' => $validated['publisher_name']
+        ]);
 
-            \App\Models\Book::create([
-                'judul' => $validated['judul'],
-                'penulis' => $validated['penulis'],
-                'isbn' => $validated['isbn'],
-                'language' => $validated['language'],
-                'status' => 'Available',
-                'category_id' => $category->id,
-                'publisher_id' => $validated['publisher_id'],
-                'cover_image' => $imagePath, // Save the file path to the database
-            ]);
-
-            return redirect()->route('buku.index')->with('success', 'Book successfully saved!');
+        // 4. Handle Image Upload
+        $coverPath = null;
+        if ($request->hasFile('cover_image')) {
+            $coverPath = $request->file('cover_image')->store('covers', 'public');
         }
+
+        // 5. Create the Book using the IDs we just found/created
+        \App\Models\Book::create([
+            'judul' => $validated['judul'],
+            'penulis' => $validated['penulis'],
+            'isbn' => $validated['isbn'],
+            'language' => $validated['language'],
+            'category_id' => $category->id,
+            'publisher_id' => $publisher->id, // Use the generated ID
+            'cover_image' => $coverPath,
+            'status' => 'Available'
+        ]);
+
+        return redirect()->route('buku.index')->with('success', 'Book successfully added to the catalog!');
+    }
 
     /**
      * Display the specified resource.
@@ -155,7 +161,7 @@ public function index(Request $request)
         return view('admin.books.edit', compact('book', 'categories', 'publishers'));
     }
 
-    public function update(Request $request, $id)
+   public function update(Request $request, $id)
     {
         $book = \App\Models\Book::findOrFail($id);
 
@@ -165,43 +171,44 @@ public function index(Request $request)
             'isbn' => 'required|string|max:50',
             'language' => 'required|string',
             'category_name' => 'required|string|max:255',
-            'publisher_id' => 'required|exists:publishers,id',
+            'publisher_name' => 'required|string|max:255', // Updated validation
             'cover_image' => 'nullable|image|max:2048',
         ]);
 
         // Handle Image Replacement
         if ($request->hasFile('cover_image')) {
-            // Delete the old image from storage if it exists
             if ($book->cover_image) {
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($book->cover_image);
             }
-            // Save the new image
             $book->cover_image = $request->file('cover_image')->store('covers', 'public');
         }
 
+        // Find or create Category and Publisher
         $category = \App\Models\Category::firstOrCreate(
             ['nama_kategori' => $validated['category_name']],
             ['deskripsi' => 'Auto-generated category']
         );
 
+        $publisher = \App\Models\Publisher::firstOrCreate(
+            ['nama_penerbit' => $validated['publisher_name']]
+        );
+
+        // Update the book
         $book->update([
             'judul' => $validated['judul'],
             'penulis' => $validated['penulis'],
             'isbn' => $validated['isbn'],
             'language' => $validated['language'],
             'category_id' => $category->id,
-            'publisher_id' => $validated['publisher_id'],
-            // Notice we don't update 'status' here so we don't accidentally overwrite an active loan!
+            'publisher_id' => $publisher->id, // Use the dynamically found/created ID
         ]);
 
         return redirect()->route('buku.index')->with('success', 'Book successfully updated!');
     }
-
     public function destroy($id)
     {
         $book = \App\Models\Book::findOrFail($id);
         
-        // Clean up the image file from the server before deleting the database record
         if ($book->cover_image) {
             \Illuminate\Support\Facades\Storage::disk('public')->delete($book->cover_image);
         }
@@ -213,7 +220,7 @@ public function index(Request $request)
 
     public function userShow($id)
     {
-        // 1. LAZY CHECK: Cek semua peminjaman aktif yang sudah melewati due_date
+
         $overdueLoans = DetailPeminjaman::where('book_id', $id)
             ->whereHas('borrow', function($query) {
                 $query->whereNull('tanggal_kembali')
@@ -226,10 +233,9 @@ public function index(Request $request)
                 $borrow->tanggal_kembali = now();
                 $borrow->save();
             }
-            // Kita TIDAK perlu mengubah status buku ke 'Available' di sini karena buku selalu 'Available' secara global
+        
         }
 
-        // 2. Ambil data buku terbaru beserta ulasannya
         $book = Book::with(['category', 'publisher', 'ratings.user'])->findOrFail($id);
 
         return view('User.Detail_buku', compact('book'));
@@ -241,8 +247,6 @@ public function index(Request $request)
     public function borrowBook($id)
     {
         $book = Book::findOrFail($id);
-
-        // CEK APAKAH USER INI SUDAH MEMINJAM BUKU INI DAN BELUM MENGEMBALIKANNYA
         $alreadyBorrowed = DetailPeminjaman::where('book_id', $id)
             ->whereHas('borrow', function($query) {
                 $query->where('user_id', Auth::id())
@@ -253,21 +257,18 @@ public function index(Request $request)
             return redirect()->back()->with('error', 'You have already borrowed this book.');
         }
 
-        // 1. Buat data transaksi di tabel borrows
         $borrow = new Borrow();
         $borrow->user_id = Auth::id();
         $borrow->tanggal_pinjam = now();
-        $borrow->due_date = now()->addDays(7); // Masa pinjam 1 minggu
+        $borrow->due_date = now()->addDays(7);
         $borrow->tanggal_kembali = null;
         $borrow->save();
 
-        // 2. Buat rincian data di tabel detail_peminjaman
         $detail = new DetailPeminjaman();
         $detail->borrow_id = $borrow->id;
         $detail->book_id = $id;
         $detail->save();
 
-        // CATATAN: KITA TIDAK MENGUBAH $book->status = 'Borrowed' agar user lain tetap bisa meminjam buku ini secara online!
 
         return redirect()->back()->with('success', 'Book successfully borrowed! Please return it by ' . $borrow->due_date->format('M d, Y') . ' (7 days).');
     }
@@ -279,7 +280,6 @@ public function index(Request $request)
     {
         $user = Auth::user();
         
-        // Laravel's 'toggle' automatically adds it if it's missing, and removes it if it's there!
         $user->readingList()->toggle($id);
 
         return redirect()->back()->with('success', 'Reading list updated successfully!');
