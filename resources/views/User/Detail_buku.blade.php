@@ -44,7 +44,7 @@
 
         <!-- Sisi Tengah: Menu Navigasi -->
         <div class="flex items-center justify-center gap-16 text-[19px] font-semibold tracking-wider">
-          <a href="{{ url('/') }}" class="border-b-2 border-[#2F1C17] pb-1 text-[#2F1C17]">
+          <a href="{{ url('/') }}" class="text-[#2F1C17]/80 hover:text-[#2F1C17] pb-1 border-b-2 border-transparent hover:border-[#2F1C17] transition-all">
             Catalog
           </a>
           <a href="#" class="text-[#2F1C17]/80 hover:text-[#2F1C17] pb-1 border-b-2 border-transparent hover:border-[#2F1C17] transition-all">
@@ -216,7 +216,7 @@
                         <h2 class="text-5xl font-bold font-judul text-[#2F1C17]">
                             Reader Reviews
                         </h2>
-                        <button class="border border-[#B7A693] px-6 py-3 rounded-md hover:bg-[#EEE6D6] font-medium transition">
+                        <button onclick="openReviewModal()" class="border border-[#B7A693] px-6 py-3 rounded-md hover:bg-[#EEE6D6] font-medium transition">
                             Write a Review
                         </button>
                     </div>
@@ -239,9 +239,12 @@
                                         {{ str_repeat('★', $rating->rating) }}{{ str_repeat('☆', 5 - $rating->rating) }}
                                     </div>
                                 </div>
+                                
+                                <!-- PERBAIKAN DI SINI: ubah $rating->review menjadi $rating->ulasan -->
                                 <p class="mt-6 text-[18px] leading-9 text-[#40342E]">
-                                    {{ $rating->review ?? 'No review text provided.' }}
+                                    {{ $rating->ulasan ?? 'No review text provided.' }}
                                 </p>
+                                
                             </div>
                         @empty
                             <div class="bg-[#FAF8F0]/20 border border-dashed border-[#D8D2C0] rounded-xl p-8 text-center text-gray-500">
@@ -358,6 +361,9 @@
 
       </div>
     </footer>
+
+    <!-- PEMANGGILAN GABUNGAN KOMPONEN RATING (TOAST & MODAL) -->
+    @include('components.rating')
 
 </body>
 </html>
