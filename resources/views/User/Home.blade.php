@@ -132,20 +132,34 @@
       
       <!-- KOLOM PENCARIAN (Sejajar dengan Archives / Special Collections) -->
       <div class="relative w-[420px]">
-        <!-- SVG Search Icon -->
+        <!-- SVG Search Icon (Sisi Kiri) -->
         <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-[#8A7B6E]">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
           </svg>
         </span>
 
+        <!-- Input Text (Ubah pr-5 menjadi pr-12 agar teks ketikan tidak menabrak tombol X di kanan) -->
         <input
           type="text"
           name="search"
           value="{{ request('search') }}"
           placeholder="Search the leather-bound archives..."
-          class="w-full bg-transparent border border-[#BDAF9C] rounded-lg py-3 pl-12 pr-5 outline-none focus:border-[#2F1C17] transition-all"
+          class="w-full bg-transparent border border-[#BDAF9C] rounded-lg py-3 pl-12 pr-12 outline-none focus:border-[#2F1C17] transition-all"
         >
+
+        <!-- TOMBOL "X" UNTUK MENGHAPUS PENCARIAN (Hanya muncul jika ada kata kunci pencarian) -->
+        @if(request('search'))
+          <a href="{{ request()->fullUrlWithQuery(['search' => null]) }}" 
+             class="absolute inset-y-0 right-0 flex items-center pr-4 text-[#8A7B6E] hover:text-[#2F1C17] transition-colors" 
+             title="Clear Search"
+          >
+            <!-- SVG Close/X Icon -->
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </a>
+        @endif
       </div>
 
       <!-- BARIS FILTER: Hanya Genre/Kategori saja (Tombol 'Available Now' sudah dihapus) -->
