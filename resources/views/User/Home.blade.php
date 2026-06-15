@@ -50,13 +50,13 @@
 
     <!-- Sisi Tengah: Menu Navigasi (Diperbesar ke 19px, Direnggangkan dengan gap-16 & tracking-wider, serta Pas di Tengah) -->
     <div class="flex items-center justify-center gap-16 text-[19px] font-semibold tracking-wider">
-      <a href="{{ url('/') }}" class="border-b-2 border-[#2F1C17] pb-1 text-[#2F1C17]">
+      <a href="{{ route('user.dashboard') }}" class="text-[#2F1C17]/80 hover:text-[#2F1C17] pb-1 border-b-2 border-transparent hover:border-[#2F1C17] transition-all">
         Catalog
       </a>
-      <a href="#" class="text-[#2F1C17]/80 hover:text-[#2F1C17] pb-1 border-b-2 border-transparent hover:border-[#2F1C17] transition-all">
+      <a href="{{ route('user.categories') }}" class="text-[#2F1C17]/80 hover:text-[#2F1C17] pb-1 border-b-2 border-transparent hover:border-[#2F1C17] transition-all">
         Categories
       </a>
-      <a href="#" class="text-[#2F1C17]/80 hover:text-[#2F1C17] pb-1 border-b-2 border-transparent hover:border-[#2F1C17] transition-all">
+      <a href="{{ route('user.reading_list_view') }}" class="text-[#2F1C17]/80 hover:text-[#2F1C17] pb-1 border-b-2 border-transparent hover:border-[#2F1C17] transition-all">
         Reading List
       </a>
     </div>
@@ -118,8 +118,8 @@
         Archives / Special Collections / The Reading Room
       </p>
 
-      <h1 class="title-font text-6xl font-bold mb-2">
-        The Scholar's Catalog
+       <h1 class="title-font text-6xl font-bold mb-2">
+        {{ $title ?? "The Scholar's Catalog" }}
       </h1>
 
       <p class="text-[#5C5148] text-lg">
@@ -247,9 +247,9 @@
 </section>
 
 <!-- MEMBERSHIP -->
+@if(!isset($title) || $title !== 'My Reading List')
 <section class="max-w-[1600px] mx-auto px-8 pb-16">
 
-  <!-- Latar belakang warna cokelat gelap elegan dengan bayangan -->
   <div class="bg-[#4A241C] rounded-xl p-10 flex justify-between items-center custom-shadow">
 
     @auth
@@ -263,8 +263,6 @@
             Welcome back, Admin. You have full access to manage books, members, and transactions.
           </p>
         </div>
-        
-        <!-- PERBAIKAN: Mengubah href menjadi route('login') agar mengarah ke halaman login terlebih dahulu -->
         <a href="{{ route('login') }}" class="bg-[#F5F2DE] text-[#2F1C17] px-8 py-4 rounded-lg font-semibold hover:bg-[#EAE5CD] transition shadow-md hover:scale-105 duration-300">
           Go to Admin Panel
         </a>
@@ -301,6 +299,8 @@
 
 </section>
 
+
+@endif
 <!-- PAGINATION -->
 <section class="pb-20">
   <div class="flex justify-center">
