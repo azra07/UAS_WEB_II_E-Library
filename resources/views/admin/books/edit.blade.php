@@ -116,17 +116,19 @@
                                 @error('category_name') <span class="text-xs text-red-600 mt-1">{{ $message }}</span> @enderror
                             </div>
 
-                            <div>
-                                <label for="publisher_id" class="block text-[11px] text-[#7A6A5E] uppercase tracking-wider font-bold mb-2">Publisher</label>
-                                <p class="text-[9px] text-transparent mb-1.5 hidden md:block">Spacer</p>
-                                <select name="publisher_id" id="publisher_id" required
-                                    class="w-full px-4 py-3 border border-[#E8E4D5] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#4A3B32] bg-white appearance-none">
+                                <div>
+                                <label for="publisher_name" class="block text-[11px] text-[#7A6A5E] uppercase tracking-wider font-bold mb-2">Publisher</label>
+                                <p class="text-[9px] text-[#7A6A5E] mb-1.5">Select existing or type a new one to update.</p>
+                                
+                                <input list="publisher_list" name="publisher_name" id="publisher_name" value="{{ old('publisher_name', $book->publisher->nama_penerbit ?? '') }}" required autocomplete="off"
+                                    class="w-full px-4 py-3 border border-[#E8E4D5] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#4A3B32] bg-white">
+                                
+                                <datalist id="publisher_list">
                                     @foreach($publishers as $publisher)
-                                        <option value="{{ $publisher->id }}" {{ old('publisher_id', $book->publisher_id) == $publisher->id ? 'selected' : '' }}>
-                                            {{ $publisher->nama_penerbit }}
-                                        </option>
+                                        <option value="{{ $publisher->nama_penerbit }}">
                                     @endforeach
-                                </select>
+                                </datalist>
+                                @error('publisher_name') <span class="text-xs text-red-600 mt-1">{{ $message }}</span> @enderror
                             </div>
                         </div>
 
