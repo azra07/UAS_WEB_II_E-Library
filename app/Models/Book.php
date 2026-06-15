@@ -38,4 +38,8 @@ class Book extends Model
     { 
         return $this->hasMany(Rating::class, 'book_id'); // pastikan foreign key di tabel rating sesuai
     }
+    public function readers()
+    {
+        return $this->belongsToMany(User::class, 'reading_lists', 'book_id', 'user_id')->withTimestamps();
+    }
 }
