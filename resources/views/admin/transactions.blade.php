@@ -190,10 +190,6 @@
                     </tbody>
                     </table>
                 </div>
-
-                <div class="p-4 border-t border-[#E8E4D5] flex items-center justify-between text-xs text-[#7A6A5E] bg-[#FCFBFA]">
-                    <p>Showing 1 to 4 of 2,145 transactions</p>
-                <div class="p-4 border-t border-[#E8E4D5] bg-[#FCFBFA]">
                     {{ $transactions->links() }}
                 </div>  
                 </div>
