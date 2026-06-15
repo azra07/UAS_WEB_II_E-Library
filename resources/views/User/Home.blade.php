@@ -181,44 +181,51 @@
     <div class="grid grid-cols-5 gap-8">
       @foreach($books as $book)
         <!-- BOOK CARD -->
-        <div class="book-card">
-          <div class="overflow-hidden rounded-lg custom-shadow">
-            <!-- Menyesuaikan pemanggilan cover_image dari database -->
+        <div class="book-card flex flex-col justify-between">
+          
+          <!-- FUNGSI 2: Bungkus Gambar dengan Link Detail Buku -->
+          <a href="{{ route('buku.user.show', $book->id) }}" class="block overflow-hidden rounded-lg custom-shadow">
             <img
               src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400' }}"
               alt="{{ $book->judul }}"
-              class="w-full h-[470px] object-cover"
+              class="w-full h-[470px] object-cover hover:scale-103 transition-transform duration-300"
             >
+          </a>
+
+          <!-- Bagian Informasi Buku -->
+          <div class="flex flex-col mt-5">
+            
+            <!-- FUNGSI 1: Mengunci tinggi judul 'h-[72px]' agar baris di bawahnya SEJAJAR SEMPURNA -->
+            <!-- FUNGSI 2: Bungkus Judul dengan Link Detail Buku -->
+            <h2 class="title-font text-3xl font-semibold line-clamp-2 hover:underline text-[#2F1C17] h-[72px] flex items-center" title="{{ $book->judul }}">
+              <a href="{{ route('buku.user.show', $book->id) }}">{{ $book->judul }}</a>
+            </h2>
+
+            <!-- Penulis Buku (Kini otomatis sejajar secara horizontal) -->
+            <p class="text-[#6B5B50] mt-1 font-medium truncate">
+              By {{ $book->penulis }}
+            </p>
+
+            <!-- Informasi ISBN & STATUS -->
+            <div class="flex items-center justify-between text-xs text-[#8A7B6E] mt-2 border-t border-[#D8D2C0]/50 pt-2">
+              <span>ISBN: {{ $book->isbn }}</span>
+              <span class="px-2 py-0.5 bg-green-100 text-green-800 rounded font-semibold uppercase text-[10px]">
+                {{ $book->status }}
+              </span>
+            </div>
+
+            <!-- Bagian Rating Bintang -->
+            <div class="flex items-center gap-2 mt-3 text-[#6E584D]">
+              @php
+                $ratingVal = round($book->ratings->avg('rating') ?? 5);
+              @endphp
+              <span>
+                {{ str_repeat('★', $ratingVal) }}{{ str_repeat('☆', 5 - $ratingVal) }}
+              </span>
+              <span class="text-sm">({{ $book->ratings->count() }})</span>
+            </div>
           </div>
 
-          <!-- Menampilkan JUDUL buku (menggunakan 'judul') -->
-          <h2 class="title-font text-3xl mt-5 font-semibold line-clamp-2 cursor-pointer hover:underline text-[#2F1C17]" title="{{ $book->judul }}">
-            {{ $book->judul }}
-          </h2>
-
-          <!-- Menampilkan PENULIS buku (menggunakan 'penulis') -->
-          <p class="text-[#6B5B50] mt-1 font-medium">
-            By {{ $book->penulis }}
-          </p>
-
-          <!-- Menampilkan ISBN & STATUS buku langsung dari database Anda -->
-          <div class="flex items-center justify-between text-xs text-[#8A7B6E] mt-2 border-t border-[#D8D2C0]/50 pt-2">
-            <span>ISBN: {{ $book->isbn }}</span>
-            <span class="px-2 py-0.5 bg-green-100 text-green-800 rounded font-semibold uppercase text-[10px]">
-              {{ $book->status }}
-            </span>
-          </div>
-
-          <!-- Bagian Rating Bintang -->
-          <div class="flex items-center gap-2 mt-3 text-[#6E584D]">
-            @php
-              $ratingVal = round($book->ratings->avg('rating') ?? 5);
-            @endphp
-            <span>
-              {{ str_repeat('★', $ratingVal) }}{{ str_repeat('☆', 5 - $ratingVal) }}
-            </span>
-            <span class="text-sm">({{ $book->ratings->count() }})</span>
-          </div>
         </div>
       @endforeach
     </div>
@@ -228,35 +235,53 @@
 <!-- MEMBERSHIP -->
 <section class="max-w-[1600px] mx-auto px-8 pb-16">
 
-  <div class="bg-[#4A241C] rounded-xl p-10 flex justify-between items-center">
+  <!-- Latar belakang warna cokelat gelap elegan dengan bayangan -->
+  <div class="bg-[#4A241C] rounded-xl p-10 flex justify-between items-center custom-shadow">
 
-    <div>
-      <h2 class="title-font text-4xl text-[#E6C8B8] font-semibold">
-        @auth
-          {{ Auth::user()->role === 'admin' ? 'Administrator Portal' : "Scholar's Tier Membership" }}
-        @else
-          Guest Access
-        @endauth
-      </h2>
-
-      <p class="text-[#C9B0A2] mt-2">
-        @auth
-          Welcome back, {{ Auth::user()->name }}. You have full access to the Private Archival collection.
-        @else
-          Log in or register to get full access to the Private Archival collection.
-        @endauth
-      </p>
-    </div>
-
-    @guest
-      <a href="{{ route('login') }}" class="bg-[#F5F2DE] px-8 py-4 rounded-lg font-medium hover:bg-[#EAE5CD] transition-colors">
-        Login Now
-      </a>
+    @auth
+      @if(Auth::user()->role === 'admin')
+        <!-- TAMPILAN JIKA YANG LOGIN ADALAH ADMIN -->
+        <div>
+          <h2 class="title-font text-4xl text-[#E6C8B8] font-semibold">
+            Administrator Portal
+          </h2>
+          <p class="text-[#C9B0A2] mt-2 text-lg">
+            Welcome back, Admin. You have full access to manage books, members, and transactions.
+          </p>
+        </div>
+        
+        <!-- PERBAIKAN: Mengubah href menjadi route('login') agar mengarah ke halaman login terlebih dahulu -->
+        <a href="{{ route('login') }}" class="bg-[#F5F2DE] text-[#2F1C17] px-8 py-4 rounded-lg font-semibold hover:bg-[#EAE5CD] transition shadow-md hover:scale-105 duration-300">
+          Go to Admin Panel
+        </a>
+      @else
+        <!-- TAMPILAN JIKA YANG LOGIN ADALAH USER/ANGGOTA BIASA -->
+        <div>
+          <h2 class="title-font text-4xl text-[#E6C8B8] font-semibold">
+            Your Personal Reading Room
+          </h2>
+          <p class="text-[#C9B0A2] mt-2 text-lg">
+            Hi, {{ Auth::user()->name }}! Explore our vast archive and manage your active loans anytime.
+          </p>
+        </div>
+        <a href="#" class="bg-[#F5F2DE] text-[#2F1C17] px-8 py-4 rounded-lg font-semibold hover:bg-[#EAE5CD] transition shadow-md hover:scale-105 duration-300">
+          My Reading List
+        </a>
+      @endif
     @else
-      <button class="bg-[#F5F2DE] px-8 py-4 rounded-lg font-medium hover:bg-[#EAE5CD] transition-colors">
-        View Benefits
-      </button>
-    @endguest
+      <!-- TAMPILAN JIKA PENGUNJUNG BELUM LOGIN (GUEST) -->
+      <div>
+        <h2 class="title-font text-4xl text-[#E6C8B8] font-semibold">
+          Join Our Academic Community
+        </h2>
+        <p class="text-[#C9B0A2] mt-2 text-lg">
+          Create an account today to start borrowing manuscripts, saving lists, and writing reviews.
+        </p>
+      </div>
+      <a href="{{ route('register') }}" class="bg-[#F5F2DE] text-[#2F1C17] px-8 py-4 rounded-lg font-semibold hover:bg-[#EAE5CD] transition shadow-md hover:scale-105 duration-300">
+        Create Account
+      </a>
+    @endauth
 
   </div>
 
@@ -271,22 +296,110 @@
 </section>
 
 <!-- FOOTER -->
-<footer class="bg-[#3A1F19] py-20 text-center text-[#C5AFA3]">
+<footer class="bg-[#3A1F19] text-[#C5AFA3] pt-16 pb-12 border-t border-[#4A241C]">
+  <div class="max-w-[1600px] mx-auto px-8">
+    
+    <!-- GRID UTAMA (4 KOLOM) -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-12 text-left">
+      
+      <!-- Kolom 1: Profil Singkat Perpustakaan -->
+      <div class="flex flex-col gap-4">
+        <h3 class="title-font text-3xl font-bold text-[#E6C8B8] tracking-wide">
+          Lexicon Librium
+        </h3>
+        <p class="text-sm opacity-80 leading-relaxed">
+          An academic digital library platform providing thousands of rare manuscripts, scholarly journals, and modern literary collections to support academic research, intellectual growth, and student literacy.
+        </p>
+      </div>
 
-  <h2 class="title-font text-5xl font-bold mb-8">
-    Lexicon Librium
-  </h2>
+      <!-- Kolom 2: Navigasi / Tautan Cepat -->
+      <div class="flex flex-col gap-4">
+        <h4 class="font-semibold text-xs text-[#E6C8B8] tracking-widest uppercase">
+          Quick Links
+        </h4>
+        <ul class="space-y-2.5 text-sm opacity-80">
+          <li>
+            <a href="{{ url('/') }}" class="hover:text-[#E6C8B8] transition-colors flex items-center gap-2">
+              <span>›</span> Book Catalog
+            </a>
+          </li>
+          <li>
+            <a href="#" class="hover:text-[#E6C8B8] transition-colors flex items-center gap-2">
+              <span>›</span> Library Categories
+            </a>
+          </li>
+          <li>
+            <a href="#" class="hover:text-[#E6C8B8] transition-colors flex items-center gap-2">
+              <span>›</span> Reading Room Regulations
+            </a>
+          </li>
+          <li>
+            <a href="#" class="hover:text-[#E6C8B8] transition-colors flex items-center gap-2">
+              <span>›</span> Frequently Asked Questions (FAQs)
+            </a>
+          </li>
+        </ul>
+      </div>
 
-  <div class="flex justify-center gap-10 mb-8">
-    <a href="#" class="hover:underline">Terms</a>
-    <a href="#" class="hover:underline">Privacy</a>
-    <a href="#" class="hover:underline">Contact</a>
+      <!-- Kolom 3: Informasi Jam Operasional Layanan -->
+      <div class="flex flex-col gap-4">
+        <h4 class="font-semibold text-xs text-[#E6C8B8] tracking-widest uppercase">
+          Operational Hours
+        </h4>
+        <ul class="space-y-2.5 text-sm opacity-80">
+          <li class="flex justify-between border-b border-[#4A241C] pb-1.5">
+            <span>Monday - Friday:</span>
+            <span class="font-medium text-[#E6C8B8]">08:00 AM - 06:00 PM</span>
+          </li>
+          <li class="flex justify-between border-b border-[#4A241C] pb-1.5">
+            <span>Saturday:</span>
+            <span class="font-medium text-[#E6C8B8]">09:00 AM - 03:00 PM</span>
+          </li>
+          <li class="flex justify-between">
+            <span>Sunday & Holidays:</span>
+            <span class="text-red-400 font-medium">Closed</span>
+          </li>
+          <li class="text-[11px] italic text-[#C9B0A2] mt-1">
+            *Our digital library services (E-Books) remain accessible 24/7.
+          </li>
+        </ul>
+      </div>
+
+      <!-- Kolom 4: Informasi Kontak & Lokasi -->
+      <div class="flex flex-col gap-4">
+        <h4 class="font-semibold text-xs text-[#E6C8B8] tracking-widest uppercase">
+          Library Contact
+        </h4>
+        <ul class="space-y-3.5 text-sm opacity-80">
+          <li class="flex items-start gap-3">
+            <span class="text-[#E6C8B8]">📍</span>
+            <span>Central Library Building, 2nd-3rd Floor. 10th University Street.</span>
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="text-[#E6C8B8]">✉️</span>
+            <a href="mailto:library@lexicon.ac.id" class="hover:underline">library@lexicon.ac.id</a>
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="text-[#E6C8B8]">📞</span>
+            <span>+62 (21) 1234-5678</span>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- BARIS BAWAH (HAK CIPTA & KETENTUAN) -->
+    <div class="border-t border-[#4A241C] mt-12 pt-8 flex flex-col md:flex-row justify-between items-center text-xs opacity-60">
+      <p>
+        © {{ date('Y') }} LEXICON LIBRIUM. ALL RIGHTS RESERVED.
+      </p>
+      <div class="flex gap-6 mt-4 md:mt-0">
+        <a href="#" class="hover:text-[#E6C8B8] transition-colors">Terms of Service</a>
+        <a href="#" class="hover:text-[#E6C8B8] transition-colors">Privacy Policy</a>
+      </div>
+    </div>
+
   </div>
-
-  <p class="text-sm opacity-70">
-    © {{ date('Y') }} Lexicon Librium. All Rights Reserved.
-  </p>
-
 </footer>
 
 </body>
