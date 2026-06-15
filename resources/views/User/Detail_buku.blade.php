@@ -114,12 +114,42 @@
 
                 <!-- TOMBOL PINJAM & FAVORIT -->
                 <div class="mt-6 space-y-4">
-                    <button class="w-full bg-[#4B2A24] hover:bg-[#311813] transition text-white py-5 rounded-md text-2xl font-semibold">
-                        Borrow Book
-                    </button>
-                    <button class="w-full border border-[#B7A693] py-5 rounded-md hover:bg-[#EEE6D6] transition text-lg font-medium">
-                        Add to Reading List
-                    </button>
+
+                    <!-- 1. KONDISI TOMBOL PINJAM BUKU -->
+                    @if($book->status === 'Borrowed')
+                        <!-- Tampilan jika buku sedang dipinjam (Warna abu-abu & disabled) -->
+                        <button disabled 
+                                class="w-full bg-[#5C4D4A]/50 text-gray-400 py-5 rounded-md text-2xl font-semibold cursor-not-allowed shadow-inner border border-[#BDAF9C]/30">
+                            Borrowed
+                        </button>
+                    @else
+                        <!-- Tampilan jika buku tersedia untuk dipinjam (Warna cokelat & aktif) -->
+                        <form action="{{ route('buku.borrow', $book->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" 
+                                    class="w-full bg-[#4B2A24] hover:bg-[#311813] transition-all text-white py-5 rounded-md text-2xl font-semibold shadow-md active:scale-95 duration-200">
+                                Borrow Book
+                            </button>
+                        </form>
+                    @endif
+
+                    <!-- 2. KONDISI TOMBOL DAFTAR BACAAN (READING LIST) -->
+                    <form action="{{ route('buku.reading_list', $book->id) }}" method="POST">
+                        @csrf
+                        @if(session('reading_list') && in_array($book->id, session('reading_list')))
+                            <!-- Jika buku SUDAH dimasukkan ke dalam daftar bacaan -->
+                            <button type="submit" 
+                                    class="w-full bg-[#EADBCB] border border-[#B7A693] py-5 rounded-md hover:bg-[#D8C7B7] transition text-lg font-semibold text-[#2F1C17] shadow-sm">
+                                ✓ Added to Reading List
+                            </button>
+                        @else
+                            <!-- Jika buku BELUM dimasukkan ke dalam daftar bacaan -->
+                            <button type="submit" 
+                                    class="w-full border border-[#B7A693] py-5 rounded-md hover:bg-[#EEE6D6] transition text-lg font-medium text-[#2F1C17]">
+                                Add to Reading List
+                            </button>
+                        @endif
+                    </form>
                 </div>
 
                 <!-- DETAIL / SPESIFIKASI BUKU (Dinamis dari DB) -->
