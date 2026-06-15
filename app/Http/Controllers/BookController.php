@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 use App\Http\Requests\StoreBookRequest;
 use App\Models\Book;
 use App\Models\Category;
+use App\Models\Rating;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Borrow;
+use App\Models\DetailPeminjaman;
 
 class BookController extends Controller
 {
@@ -203,5 +207,110 @@ public function show(string $id)
         $book->delete();
         
         return redirect()->route('buku.index')->with('success', 'Book successfully deleted!');
+    }
+
+    public function userShow($id)
+    {
+        // 1. LAZY CHECK: Cek apakah ada peminjaman aktif yang sudah melewati batas waktu seminggu (due_date)
+        // Jika ada, kembalikan buku secara otomatis ke sistem
+        $overdueLoans = DetailPeminjaman::where('book_id', $id)
+            ->whereHas('borrow', function($query) {
+                $query->whereNull('tanggal_kembali')
+                      ->where('due_date', '<', now());
+            })->get();
+
+        if ($overdueLoans->isNotEmpty()) {
+            foreach ($overdueLoans as $loan) {
+                $borrow = $loan->borrow;
+                $borrow->tanggal_kembali = now(); // Set tanggal kembali hari ini
+                $borrow->save();
+            }
+
+            // Kembalikan status buku menjadi Available
+            $book = Book::findOrFail($id);
+            $book->status = 'Available';
+            $book->save();
+        }
+
+        // 2. Ambil data buku terbaru beserta ulasannya
+        $book = Book::with(['category', 'publisher', 'ratings.user'])->findOrFail($id);
+
+        return view('User.Detail_buku', compact('book'));
+    }
+
+    /**
+     * Memproses Transaksi Peminjaman Buku (Borrow)
+     */
+    public function borrowBook($id)
+    {
+        $book = Book::findOrFail($id);
+
+        if ($book->status !== 'Available') {
+            return redirect()->back()->with('error', 'This book is currently borrowed or unavailable.');
+        }
+
+        // 1. Buat data transaksi di tabel borrows
+        $borrow = new Borrow();
+        $borrow->user_id = Auth::id();
+        $borrow->tanggal_pinjam = now();
+        $borrow->due_date = now()->addDays(7); // Batas waktu peminjaman otomatis 1 minggu (7 hari)
+        $borrow->tanggal_kembali = null;
+        $borrow->save();
+
+        // 2. Buat rincian data di tabel detail_peminjamen
+        $detail = new DetailPeminjaman();
+        $detail->borrow_id = $borrow->id;
+        $detail->book_id = $id;
+        $detail->save();
+
+        // 3. Ubah status buku menjadi Borrowed
+        $book->status = 'Borrowed';
+        $book->save();
+
+        return redirect()->back()->with('success', 'Book successfully borrowed! Please return it by ' . $borrow->due_date->format('M d, Y') . ' (7 days).');
+    }
+
+    /**
+     * Memproses Simpan & Hapus Daftar Bacaan (Toggle Reading List menggunakan Session)
+     */
+    public function toggleReadingList($id)
+    {
+        // Menggunakan session array agar praktis, instan, dan tanpa perlu membuat migrasi baru
+        $readingList = session()->get('reading_list', []);
+
+        if (in_array($id, $readingList)) {
+            // Jika sudah ada, hapus dari daftar (Klik Kedua kalinya)
+            $readingList = array_diff($readingList, [$id]);
+            session()->put('reading_list', $readingList);
+            return redirect()->back()->with('success', 'Book removed from your Reading List.');
+        } else {
+            // Jika belum ada, tambahkan ke daftar (Klik Pertama kalinya)
+            $readingList[] = $id;
+            session()->put('reading_list', $readingList);
+            return redirect()->back()->with('success', 'Book added to your Reading List!');
+        }
+    }
+
+    public function storeReview(Request $request, $id)
+    {
+        // 1. Validasi input ulasan dari form
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'review' => 'required|string|max:1000',
+        ]);
+
+        // 2. Simpan ulasan baru ke tabel ratings
+        $rating = new Rating();
+        $rating->book_id = $id;
+        $rating->user_id = Auth::id();
+        $rating->rating = $request->rating;
+        
+        // PERBAIKAN DI SINI: Mengisi kolom 'ulasan' dengan input 'review'
+        $rating->ulasan = $request->review; 
+        
+        $rating->save();
+
+        // 3. Kembali dengan pesan sukses
+        return redirect()->back()->with('success', 'Thank you! Your review has been submitted.');
     }
 }
