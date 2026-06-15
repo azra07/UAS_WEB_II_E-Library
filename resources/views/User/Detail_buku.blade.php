@@ -143,9 +143,9 @@
                     @endif
 
                     <!-- 2. KONDISI TOMBOL DAFTAR BACAAN (READING LIST) -->
-                    <form action="{{ route('buku.reading_list', $book->id) }}" method="POST">
+                      <form action="{{ route('buku.reading_list', $book->id) }}" method="POST">
                         @csrf
-                        @if(session('reading_list') && in_array($book->id, session('reading_list')))
+                        @if(Auth::check() && Auth::user()->readingList->contains($book->id))
                             <button type="submit" 
                                     class="w-full bg-[#EADBCB] border border-[#B7A693] py-5 rounded-md hover:bg-[#D8C7B7] transition text-lg font-semibold text-[#2F1C17] shadow-sm">
                                 ✓ Added to Reading List
