@@ -14,11 +14,34 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): View
+public function edit(Request $request): View
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
+        $user = $request->user();
+
+        // Fetch Active Loans (Not yet returned)
+        $activeLoans = \App\Models\Borrow::with(['details.book'])
+            ->where('user_id', $user->id)
+            ->whereNull('tanggal_kembali')
+            ->latest('tanggal_pinjam')
+            ->get();
+
+        // Fetch Borrowing History (Already returned)
+        $pastLoans = \App\Models\Borrow::with(['details.book'])
+            ->where('user_id', $user->id)
+            ->whereNotNull('tanggal_kembali')
+            ->latest('tanggal_kembali')
+            ->get();
+
+        // Fetch user's favorite books (Top rated by this user)
+        $favoriteBooks = \App\Models\Rating::with('book')
+            ->where('user_id', $user->id)
+            ->where('rating', '>=', 4)
+            ->latest()
+            ->take(5)
+            ->get();
+
+        // Point to your team's custom Profil blade file
+        return view('User.Profil', compact('user', 'activeLoans', 'pastLoans', 'favoriteBooks'));
     }
 
     /**
@@ -56,5 +79,22 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    public function updateBasic(\Illuminate\Http\Request $request)
+    {
+        $user = \Illuminate\Support\Facades\Auth::user();
+        
+        $request->validate([
+            'name' => 'required|string|max:255',
+            // Ignore the user's current email when checking for unique emails
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+        ]);
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->save();
+
+        return redirect()->back()->with('success', 'Your personal details have been updated.');
     }
 }

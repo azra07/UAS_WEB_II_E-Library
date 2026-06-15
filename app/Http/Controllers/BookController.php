@@ -140,7 +140,7 @@ public function index(Request $request)
     /**
      * Display the specified resource.
      */
-public function show(string $id)
+    public function show(string $id)
     {
         $book = \App\Models\Book::with(['category', 'publisher'])->findOrFail($id);
         return view('admin.books.show', compact('book'));
@@ -277,20 +277,12 @@ public function show(string $id)
      */
     public function toggleReadingList($id)
     {
-        // Menggunakan session array agar praktis, instan, dan tanpa perlu membuat migrasi baru
-        $readingList = session()->get('reading_list', []);
+        $user = Auth::user();
+        
+        // Laravel's 'toggle' automatically adds it if it's missing, and removes it if it's there!
+        $user->readingList()->toggle($id);
 
-        if (in_array($id, $readingList)) {
-            // Jika sudah ada, hapus dari daftar (Klik Kedua kalinya)
-            $readingList = array_diff($readingList, [$id]);
-            session()->put('reading_list', $readingList);
-            return redirect()->back()->with('success', 'Book removed from your Reading List.');
-        } else {
-            // Jika belum ada, tambahkan ke daftar (Klik Pertama kalinya)
-            $readingList[] = $id;
-            session()->put('reading_list', $readingList);
-            return redirect()->back()->with('success', 'Book added to your Reading List!');
-        }
+        return redirect()->back()->with('success', 'Reading list updated successfully!');
     }
 
     public function storeReview(Request $request, $id)
@@ -328,18 +320,14 @@ public function show(string $id)
      */
     public function userReadingList()
     {
-        // Mengambil semua ID buku yang disimpan user di dalam session reading_list
-        $bookIds = session()->get('reading_list', []);
+        $user = Auth::user();
         
-        // Query hanya buku-buku yang ID-nya ada di dalam daftar bacaan user
-        $books = Book::with(['category', 'publisher', 'ratings'])
-            ->whereIn('id', $bookIds)
-            ->paginate(10);
+        // Ambil buku yang ADA di relasi Many-to-Many readingList user ini
+        $books = $user->readingList()->with(['category', 'publisher', 'ratings'])->paginate(10);
             
         $categories = Category::all();
-        $title = "My Reading List"; // Mengubah judul halaman secara dinamis
+        $title = "My Reading List"; 
 
-        // Menggunakan kembali (reuse) tampilan Home agar praktis dan langsung berfungsi dengan desain indah Anda
         return view('User.Home', compact('books', 'categories', 'title'));
     }
 }

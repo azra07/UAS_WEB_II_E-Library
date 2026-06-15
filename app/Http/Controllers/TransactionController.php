@@ -7,26 +7,57 @@ use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
-    public function index()
+public function index(Request $request)
     {
-        // Fetch all borrows. 
-        // We use 'with' to eagerly load the User (borrower) AND the details (which contains the Book)
-        // We sort by latest first.
-        $transactions = Borrow::with(['user'])->latest()->get();
+        // 1. Start the query with relationships loaded
+        $query = Borrow::with(['user', 'details.book'])->latest();
 
-        // Calculate Ledger Stats
+        // 2. SEARCH LOGIC (Borrower Name, Book Title, or Transaction ID)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                // Search by exact Transaction ID (removes 'TRX-' if typed)
+                $cleanId = ltrim(str_replace('TRX-', '', strtoupper($search)), '0');
+                if (is_numeric($cleanId)) {
+                    $q->where('id', $cleanId);
+                }
+
+                // Search by User Name
+                $q->orWhereHas('user', function($userQuery) use ($search) {
+                    $userQuery->where('name', 'like', "%{$search}%");
+                });
+
+                // Search by Book Title
+                $q->orWhereHas('details.book', function($bookQuery) use ($search) {
+                    $bookQuery->where('judul', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        // 3. STATUS FILTER LOGIC
+        if ($request->filled('status') && $request->status !== 'All Statuses') {
+            if ($request->status === 'Returned') {
+                $query->whereNotNull('tanggal_kembali');
+            } elseif ($request->status === 'On Loan') {
+                $query->whereNull('tanggal_kembali')->whereDate('due_date', '>=', today());
+            } elseif ($request->status === 'Overdue') {
+                $query->whereNull('tanggal_kembali')->whereDate('due_date', '<', today());
+            }
+        }
+
+        // 4. DATE FILTER LOGIC (Filters by Issue Date)
+        if ($request->filled('date')) {
+            $query->whereDate('tanggal_pinjam', $request->date);
+        }
+
+        // 5. Execute query with Pagination (10 per page)
+        $transactions = $query->paginate(10)->withQueryString();
+
+        // Calculate Ledger Stats (Now using accurate due_date!)
         $activeLoans = Borrow::whereNull('tanggal_kembali')->count();
         $returnedToday = Borrow::whereNotNull('tanggal_kembali')->whereDate('tanggal_kembali', today())->count();
-        
-        // Due Today: Borrows where the estimated due date (assume 14 days from tanggal_pinjam) is today, and not yet returned
-        $dueToday = Borrow::whereNull('tanggal_kembali')
-                          ->whereDate('tanggal_pinjam', today()->subDays(14))
-                          ->count();
-                          
-        // Overdue: Borrows older than 14 days and not yet returned
-        $overdue = Borrow::whereNull('tanggal_kembali')
-                         ->whereDate('tanggal_pinjam', '<', today()->subDays(14))
-                         ->count();
+        $dueToday = Borrow::whereNull('tanggal_kembali')->whereDate('due_date', today())->count();
+        $overdue = Borrow::whereNull('tanggal_kembali')->whereDate('due_date', '<', today())->count();
 
         return view('admin.transactions', compact('transactions', 'activeLoans', 'returnedToday', 'dueToday', 'overdue'));
     }
