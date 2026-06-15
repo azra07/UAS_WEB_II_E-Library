@@ -31,6 +31,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::patch('/user/profile/update', [App\Http\Controllers\ProfileController::class, 'updateBasic'])->name('profile.update_basic');
 
     Route::get('/user/dashboard', [BookController::class, 'userDashboard'])->name('user.dashboard');
     Route::get('/user/buku/{id}', [BookController::class, 'userShow'])->name('buku.user.show');
@@ -45,13 +46,14 @@ Route::middleware(['auth'])->group(function () {
     // 2. ROUTE KHUSUS ADMIN (Dilindungi Middleware Admin)
     // Catatan: Pastikan Anda sudah mendaftarkan middleware 'admin' di bootstrap/app.php
     Route::middleware(['admin'])->group(function () {
-        Route::get('/admin/dashboard', function () { return view('admin.dashboard'); })->name('admin.dashboard');
+        Route::get('/admin/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('admin.dashboard');
         Route::get('/admin/catalog', [BookController::class, 'index'])->name('admin.catalog');
         
         // Manajemen Anggota (Members)
         Route::get('/admin/members', [MemberController::class, 'index'])->name('members.index');
         Route::get('/admin/members/create', [MemberController::class, 'create'])->name('members.create');
         Route::post('/admin/members', [MemberController::class, 'store'])->name('members.store');
+        Route::resource('members', MemberController::class);
         
         // Manajemen Transaksi
         Route::get('/admin/transactions', [TransactionController::class, 'index'])->name('transactions.index');
