@@ -26,3 +26,17 @@ Aplikasi **E-Library** adalah platform perpustakaan digital berbasis web yang di
 1. Clone repositori ini:
    ```bash
    git clone [https://github.com/azra07/UAS_WEB_II_Library.git](https://github.com/azra07/UAS_WEB_II_Library.git)
+2. Install Composer, NPM, Environment dan PHP Key
+   ```bash
+   composer install
+   npm install
+   copy .env.example .env
+   php artisan key:generate
+3. Migrasi Data dan Build Aset
+   ```bash
+   php artisan migrate --seed
+   npm run build
+4. Run/Test
+   ```bash
+   composer run dev
+   composer run test
