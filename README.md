@@ -38,5 +38,9 @@ Aplikasi **E-Library** adalah platform perpustakaan digital berbasis web yang di
    npm run build
 4. Run/Test
    ```bash
+   Composer
    composer run dev
    composer run test
+   PHP
+   php artisan serve
+   php artisan test
