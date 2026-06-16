@@ -11,7 +11,18 @@
         .custom-shadow { box-shadow: 0 12px 32px -12px rgba(62, 39, 35, 0.15); }
     </style>
 </head>
-<body class="bg-[#fbfbe2] text-[#1b1d0e] min-h-screen flex items-center justify-center font-['Inter']">
+<body class="bg-[#fbfbe2] text-[#1b1d0e] min-h-screen flex items-center justify-center font-['Inter'] relative">
+
+<!-- TOMBOL KEMBALI DI KIRI ATAS LAYAR (MELAYANG ELEGAN) -->
+<div class="fixed top-8 left-8 z-50">
+    <a href="{{ url('/') }}" class="flex items-center gap-2 text-[#3e2723]/80 hover:text-[#3e2723] font-bold transition-all duration-200 text-sm group">
+        <!-- SVG Icon Back Arrow -->
+        <svg class="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        Back
+    </a>
+</div>
 
 <main class="w-full max-w-4xl p-4">
     <div class="bg-white rounded-xl custom-shadow border border-gray-200 overflow-hidden flex flex-col md:flex-row">
